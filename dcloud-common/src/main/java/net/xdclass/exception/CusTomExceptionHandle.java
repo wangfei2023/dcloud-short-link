@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * @Contact: 1850195602@qq.com
  * @Date: 2023/5/1 0001 19:02
  * @Version: 1.0
- * @Description:
+ * @Description:自定义异常处理器
  */
 //RestControllerAdvice不需要加 @RequestBody注解;
 @RestControllerAdvice

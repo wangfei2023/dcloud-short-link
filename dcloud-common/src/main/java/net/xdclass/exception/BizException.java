@@ -7,7 +7,7 @@ import lombok.Data;
  * @Contact: 1850195602@qq.com
  * @Date: 2023/5/1 0001 18:50
  * @Version: 1.0
- * @Description:
+ * @Description:自定义全局异常
  */
 @Data
 public class BizException extends RuntimeException {
