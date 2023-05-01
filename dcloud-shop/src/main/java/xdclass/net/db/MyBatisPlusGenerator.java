@@ -1,4 +1,4 @@
-package net.xdclass.db;
+package xdclass.net.db;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.annotation.IdType;
