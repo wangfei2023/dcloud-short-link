@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.xdclass.config.SmsConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -43,6 +44,7 @@ public class SmsComponent {
      * @param templateId
      * @param value
      */
+    @Async
     public void send(String to, String templateId, String value) {
         //对请求格式化
         String url = String.format(URL_TEMPLATE, to, templateId, value);

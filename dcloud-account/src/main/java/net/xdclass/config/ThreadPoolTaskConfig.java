@@ -24,10 +24,10 @@ public class ThreadPoolTaskConfig {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         //维护线程的最少数量,即使没有执行任务,也会一直存活;
         //如果设置allowCoreThreadTimeout=true（默认false）时，核心线程会超时关闭
-        executor.setCorePoolSize(4);
+        executor.setCorePoolSize(16);
         //最大线程池数量，当线程数>=corePoolSize，且任务队列已满时。线程池会创建新线程来处理任务
         //当线程数=maxPoolSize，且任务队列已满时，线程池会拒绝处理任务而抛出异常
-        executor.setMaxPoolSize(8);
+        executor.setMaxPoolSize(64);
         //缓存队列（阻塞队列）当核心线程数达到最大时，新任务会放在队列中排队等待执行
         //todo:当请求量大于最大线程池数量;
         //缓存队列（阻塞队列）当核心线程数达到最大时，新任务会放在队列中排队等待执行
