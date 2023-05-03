@@ -24,8 +24,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 //服务的注册和发现;
 @EnableDiscoveryClient
 @SpringBootApplication
-//开启异步调用;
-@EnableAsync
+
 public class AccountApplication {
     public static void main(String[] args) {
         SpringApplication.run(AccountApplication.class,args);
