@@ -12,5 +12,5 @@ import net.xdclass.utils.JsonData;
 
 public interface NotifyService {
     //todo:测试发送验证码;
-    public JsonData send();
+    public void send ();
 }

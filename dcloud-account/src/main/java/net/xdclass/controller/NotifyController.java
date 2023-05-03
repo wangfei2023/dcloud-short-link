@@ -21,7 +21,7 @@ public class NotifyController {
     private NotifyService notifyService;
    @RequestMapping("send_code")
     public JsonData sendCode(){
-       JsonData send = notifyService.send();
-       return JsonData.buildSuccess(send);
+       notifyService.send();
+       return JsonData.buildSuccess();
    }
 }

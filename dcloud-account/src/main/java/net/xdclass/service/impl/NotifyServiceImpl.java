@@ -24,11 +24,18 @@ public class NotifyServiceImpl implements NotifyService {
     private RestTemplate restTemplate;
     @Override
     //todo:开启异步调用;
-    @Async
-    public JsonData send() {
+   // @Async
+    // @Async造成失效：
+    /*
+    注解@Async的方法不是public方法
+注解@Async的返回值只能为void或者Future
+注解@Async方法使用static修饰也会失效
+spring无法扫描到异步类，没加注解@Async 或 @EnableAsync注解
+     */
+    public void send() {
         String response =null;
         try {
-            TimeUnit.MICROSECONDS.sleep(200);
+            TimeUnit.MICROSECONDS.sleep(20000);
             ResponseEntity<String> forEntity = restTemplate.getForEntity("https://blog.csdn.net/qq_20042935/article/details/122556820", String.class);
              response = forEntity.getBody();
             //:todo:将body体封装进去
@@ -36,6 +43,5 @@ public class NotifyServiceImpl implements NotifyService {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return JsonData.buildCodeAndMsg(1,response);
     }
 }
