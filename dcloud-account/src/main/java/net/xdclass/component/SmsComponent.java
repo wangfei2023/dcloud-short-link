@@ -45,6 +45,7 @@ public class SmsComponent {
      * @param value
      */
     @Async("threadPoolTaskExecutor")
+    //todo:  value发送短信内容;
     public void send(String to, String templateId, String value) {
         //对请求格式化
         String url = String.format(URL_TEMPLATE, to, templateId, value);

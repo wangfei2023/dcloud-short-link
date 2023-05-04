@@ -2,16 +2,17 @@ package net.xdclass.controller;
 
 import com.google.code.kaptcha.Producer;
 import net.xdclass.config.CaptchaConfig;
+import net.xdclass.enums.BizCodeEnum;
+import net.xdclass.enums.SendCodeEnum;
+import net.xdclass.request.SendCodeRequest;
 import net.xdclass.service.NotifyService;
 import net.xdclass.utils.CommonUtil;
 import net.xdclass.utils.JsonData;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpRequest;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
@@ -42,11 +43,12 @@ public class NotifyController {
     private StringRedisTemplate stringRedisTemplate;
     private static final long EXPER_TIME=1000*60*10;
    //用于测试
-    @RequestMapping("send_code")
+    @RequestMapping("send")
     public JsonData sendCode(){
        notifyService.send();
        return JsonData.buildSuccess();
    }
+    //todo:做缓存验证码,缓存到redis里面;
    @GetMapping("/captcha")
     public void getCaptcha(HttpServletRequest request, HttpServletResponse response){
        String text = producer.createText();
@@ -63,6 +65,24 @@ public class NotifyController {
 
 
    }
+
+   //todo:发送短信验证码;
+    @PostMapping("send_code")
+    public JsonData sendCode(@RequestBody SendCodeRequest sendCodeRequest,HttpServletRequest request ){
+        String captchaKey = getCaptchaKey(request);
+        String catchcaptchaKey = stringRedisTemplate.opsForValue().get(captchaKey);
+        String capcha = sendCodeRequest.getCapcha();
+        if (!ObjectUtils.isEmpty(catchcaptchaKey)&&!ObjectUtils.isEmpty(capcha)&&catchcaptchaKey.equalsIgnoreCase(capcha)){
+            stringRedisTemplate.delete(catchcaptchaKey);
+            JsonData jsonData = notifyService.sendCode(SendCodeEnum.USER_REGISTER, sendCodeRequest.getTo());
+            return jsonData;
+        }else{
+            return JsonData.buildResult(BizCodeEnum.CODE_CAPTCHA_ERROR);
+        }
+    }
+      /*
+   公共方法;
+      */
     public String getCaptchaKey(HttpServletRequest request){
         String ipAddr = CommonUtil.getIpAddr(request);
         String header = request.getHeader("User-Agent");

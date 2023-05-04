@@ -1,7 +1,12 @@
 package net.xdclass.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import net.xdclass.component.SmsComponent;
+import net.xdclass.config.SmsConfig;
+import net.xdclass.enums.SendCodeEnum;
 import net.xdclass.service.NotifyService;
+import net.xdclass.utils.CheckUtil;
+import net.xdclass.utils.CommonUtil;
 import net.xdclass.utils.JsonData;
 import net.xdclass.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +29,10 @@ import java.util.concurrent.TimeUnit;
 public class NotifyServiceImpl implements NotifyService {
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private SmsComponent smsComponent;
+    @Autowired
+    private SmsConfig smsConfig;
     @Override
     //todo:开启异步调用;
    // @Async
@@ -45,5 +54,18 @@ spring无法扫描到异步类，没加注解@Async 或 @EnableAsync注解
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public JsonData sendCode(SendCodeEnum userRegister, String to) {
+        //todo:发送邮箱验证码
+        if (CheckUtil.isEmail(to)){
+
+         //todo:发送邮箱验证码
+        }else if (CheckUtil.isPhone(to)){
+        //todo:发送手机验证码
+            smsComponent.send(to,smsConfig.getTemplateId(),CommonUtil.getRandomCode(6));
+        }
+        return null;
     }
 }

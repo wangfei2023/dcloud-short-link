@@ -1,5 +1,6 @@
 package net.xdclass.service;
 
+import net.xdclass.enums.SendCodeEnum;
 import net.xdclass.utils.JsonData;
 
 /**
@@ -13,4 +14,6 @@ import net.xdclass.utils.JsonData;
 public interface NotifyService {
     //todo:测试发送验证码;
     public void send ();
+
+    JsonData sendCode(SendCodeEnum userRegister, String to);
 }
