@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 //开启异步调用;
 @EnableAsync
 public class ThreadPoolTaskConfig {
-    @Bean("executor")
+    @Bean("threadPoolTaskExecutor")
     public ThreadPoolTaskExecutor executor(){
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         //维护线程的最少数量,即使没有执行任务,也会一直存活;

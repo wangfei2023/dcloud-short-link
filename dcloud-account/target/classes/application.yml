@@ -14,6 +14,22 @@ spring:
     url: jdbc:mysql://124.222.215.26:3306/dcloud_account?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
     password: 123456
+#    配置redis
+  redis:
+    client-type: jedis
+    host: 124.222.215.26
+    password: xdclass.net
+    port: 6379
+    jedis:
+      pool:
+        # 连接池最大连接数（使用负值表示没有限制）
+        max-active: 100
+        # 连接池中的最大空闲连接
+        max-idle: 100
+        # 连接池中的最小空闲连接
+        min-idle: 100
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: 60000
 #配置plus打印sql日志
 mybatis-plus:
   configuration:

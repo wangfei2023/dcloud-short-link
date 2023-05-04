@@ -12,6 +12,7 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,12 +31,18 @@ import org.springframework.web.client.RestTemplate;
 todo:它是个函数式接口，用于根据URI和HttpMethod创建出一个ClientHttpRequest来发送请求~客户端发送请求;
  */
 @Configuration
-public class  RestTemplateConfig {
+class  RestTemplateConfig {
     @Bean
     public RestTemplate restTemplate(ClientHttpRequestFactory factory) {
         return new RestTemplate(factory);
 
     }
+    //todo:这里是ClientHttpRequest代替simpleClientHttpRequestFactory
+    @Bean
+    public ClientHttpRequestFactory httpRequestFactory(){
+        return new HttpComponentsClientHttpRequestFactory(httpClient());
+    }
+
     //一下方法会造成每次前端访问都会创建一个新的simpleClientHttpRequestFactory,所以要进行优化;
 //    @Bean
 //    public ClientHttpRequestFactory simpleClientHttpRequestFactory() {

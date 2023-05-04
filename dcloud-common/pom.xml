@@ -59,7 +59,11 @@
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
         </dependency>
-
+<!--        redis使用连接池-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
 
 
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
