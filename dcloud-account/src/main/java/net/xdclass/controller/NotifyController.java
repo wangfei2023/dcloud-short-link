@@ -81,7 +81,7 @@ public class NotifyController {
         }
     }
       /*
-   公共方法;
+   公共方法;获取请求IP地址;
       */
     public String getCaptchaKey(HttpServletRequest request){
         String ipAddr = CommonUtil.getIpAddr(request);

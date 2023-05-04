@@ -3,13 +3,18 @@ package net.xdclass.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import net.xdclass.component.SmsComponent;
 import net.xdclass.config.SmsConfig;
+import net.xdclass.constant.RedisKey;
+import net.xdclass.enums.BizCodeEnum;
 import net.xdclass.enums.SendCodeEnum;
 import net.xdclass.service.NotifyService;
 import net.xdclass.utils.CheckUtil;
 import net.xdclass.utils.CommonUtil;
 import net.xdclass.utils.JsonData;
 import net.xdclass.utils.TimeUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -27,12 +32,16 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 public class NotifyServiceImpl implements NotifyService {
+    //todo：验证码10min有效;
+    private static final int EXPERTIME=1000*60*10;
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
     private SmsComponent smsComponent;
     @Autowired
     private SmsConfig smsConfig;
+    @Autowired
+   private StringRedisTemplate redisTemplate;
     @Override
     //todo:开启异步调用;
    // @Async
@@ -58,6 +67,19 @@ spring无法扫描到异步类，没加注解@Async 或 @EnableAsync注解
 
     @Override
     public JsonData sendCode(SendCodeEnum userRegister, String to) {
+        String catchKey = String.format(RedisKey.CHECK_CODE_KEY, userRegister.name(), to);
+        String catchValue = redisTemplate.opsForValue().get(catchKey);
+        //判断缓存里面是否存在验证码;
+        if (StringUtils.isNoneBlank(catchValue)){
+            long ttl = Long.parseLong(catchKey.split("_")[1]);
+            if (CommonUtil.getCurrentTimestamp()-ttl<60){
+                return JsonData.buildResult(BizCodeEnum.CODE_LIMITED);
+            }
+        }
+        String code = CommonUtil.getRandomCode(6);
+        long timestamp = CommonUtil.getCurrentTimestamp();
+         String value=code+"_"+timestamp;
+         redisTemplate.opsForValue().set(catchKey,value,EXPERTIME,TimeUnit.MILLISECONDS);
         //todo:发送邮箱验证码
         if (CheckUtil.isEmail(to)){
 
