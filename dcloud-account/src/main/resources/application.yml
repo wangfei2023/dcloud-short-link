@@ -38,3 +38,11 @@ sms:
 #  应用列表
   app-code: 31efeec6a2424df3857dccd75cbd94c8
   template-id: JM1000372
+aliyun:
+  oss:
+    file:
+      endpoint: oss-cn-shanghai.aliyuncs.com
+      keyid:    LTAI5t7WAcQSRW3EFS8Tutrh
+      keysecret: 7lKGHb1WQGjZ2K43CHCZhfIVOEsdeM
+      bucketname: dcloud-short-shop
+
