@@ -14,7 +14,7 @@ spring:
     url: jdbc:mysql://124.222.215.26:3306/dcloud_account?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
     password: 123456
-#    配置redis
+  #    配置redis
   redis:
     client-type: jedis
     host: 124.222.215.26
@@ -34,7 +34,28 @@ spring:
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
 sms:
-#  应用列表
   app-code: 31efeec6a2424df3857dccd75cbd94c8
   template-id: JM1000372
+#腾讯云获取https://console.cloud.tencent.com/cos/bucket
+#aliyun:
+#  oss:
+#    endpoint: oss-cn-shanghai.aliyuncs.com
+#    access-key-id: LTAI5tEJsvZrjSSYM1JyMnzd
+#    access-key-secret: VO087tPHzhlJJkdfSA3ePA8wMrOaqP
+#    bucketname: dcloud_link
+# OSS相关配置信息
+aliyun:
+  oss:
+    endpoint: oss-cn-shanghai.aliyuncs.com # oss对外服务的访问域名
+    accessKeyId: LTAI5tEJsvZrjSSYM1JyMnzd # 访问身份验证中用到用户标识
+    accessKeySecret: VO087tPHzhlJJkdfSA3ePA8wMrOaqP # 用户用于加密签名字符串和oss用来验证签名字符串的密钥
+    bucketName: dcloud_link # oss的存储空间
+    policy:
+      expire: 300 # 签名有效期(S)
+      maxSize: 10 # 上传文件大小(M)
+      callback: http://localhost:8080/aliyun/oss/callback # 文件上传成功后的回调地址
+      dir:
+        prefix: xtslife/images/ # 上传文件夹路径前缀
+
