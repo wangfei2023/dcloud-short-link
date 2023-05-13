@@ -72,10 +72,7 @@ public class NotifyController {
         String captchaKey = getCaptchaKey(request);
         //todo:判断redis缓存是否有验证码;
         String catchcaptchaKey = stringRedisTemplate.opsForValue().get(captchaKey);
-        //将redis中的验证码进行收集;导出Excel;
-        if(!ObjectUtils.isEmpty(catchcaptchaKey)){
-            
-        }
+
         //todo：用户请求获取验证码;
         String capcha = sendCodeRequest.getCapcha();
         if (!ObjectUtils.isEmpty(catchcaptchaKey)&&!ObjectUtils.isEmpty(capcha)&&catchcaptchaKey.equalsIgnoreCase(capcha)){
@@ -95,5 +92,6 @@ public class NotifyController {
         String key="account-service"+CommonUtil.MD5(ipAddr+header);
         return key;
     }
+
 
 }

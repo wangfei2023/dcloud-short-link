@@ -1,5 +1,7 @@
 package net.xdclass.manager;
 
+import net.xdclass.model.AccountDO;
+
 /**
  * @Author: MrWang
  * @Contact: 1850195602@qq.com
@@ -9,5 +11,5 @@ package net.xdclass.manager;
  */
 
 public interface AccountManager {
-
+   int insert(AccountDO accountDO);
 }

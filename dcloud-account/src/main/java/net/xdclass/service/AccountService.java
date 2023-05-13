@@ -1,5 +1,8 @@
 package net.xdclass.service;
 
+import net.xdclass.request.AccountRegisterRequest;
+import net.xdclass.utils.JsonData;
+
 /**
  * @Author: MrWang
  * @Contact: 1850195602@qq.com
@@ -9,5 +12,13 @@ package net.xdclass.service;
  */
 
 public interface AccountService {
-
+    /**
+     * 用户注册;
+     *
+     * 默认文件大小 1M,超过会报错
+     *
+     * @param accountRegisterRequest
+     * @return
+     */
+    JsonData register(AccountRegisterRequest accountRegisterRequest);
 }

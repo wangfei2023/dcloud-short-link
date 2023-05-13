@@ -14,6 +14,8 @@ import net.xdclass.utils.JsonData;
 public interface NotifyService {
     //todo:测试发送验证码;
     public void send ();
-
+    //发送验证码;
     JsonData sendCode(SendCodeEnum userRegister, String to);
+    //校验验证码;
+    Boolean CheckCode(SendCodeEnum userRegister, String to,String code);
 }
