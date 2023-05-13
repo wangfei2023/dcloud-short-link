@@ -51,11 +51,6 @@ aliyun:
     endpoint: oss-cn-shanghai.aliyuncs.com # oss对外服务的访问域名
     accessKeyId: LTAI5tEJsvZrjSSYM1JyMnzd # 访问身份验证中用到用户标识
     accessKeySecret: VO087tPHzhlJJkdfSA3ePA8wMrOaqP # 用户用于加密签名字符串和oss用来验证签名字符串的密钥
-    bucketName: dcloud_link # oss的存储空间
-    policy:
-      expire: 300 # 签名有效期(S)
-      maxSize: 10 # 上传文件大小(M)
-      callback: http://localhost:8080/aliyun/oss/callback # 文件上传成功后的回调地址
-      dir:
-        prefix: xtslife/images/ # 上传文件夹路径前缀
+    bucketName: dcloud-short-shop # oss的存储空间
+    objectName: 111.jpg
 

@@ -1,11 +1,10 @@
 package net.xdclass.service;
 
-import net.xdclass.oss.OssCallbackResult;
-import net.xdclass.oss.OssPolicyResult;
+
+import net.xdclass.utils.JsonData;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
 
 /**
  * @Author: MrWang
@@ -19,15 +18,7 @@ public interface FileService {
     /**
      * 测试上传文件
      */
-    String uploadImg(MultipartFile file);
-    /**
-     * oss上传策略生成
-     */
-    HttpServletRequest policy(HttpServletRequest request);
+    JsonData uploadImg(MultipartFile file);
 
-    /**
-     * oss上传成功回调
-     */
-    OssCallbackResult callback(HttpServletRequest request);
 
 }
