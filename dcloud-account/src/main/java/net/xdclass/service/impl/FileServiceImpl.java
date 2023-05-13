@@ -55,7 +55,7 @@ public class FileServiceImpl implements FileService {
 
         //JDK8的日期格式
         LocalDateTime ldt = LocalDateTime.now();
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         //拼装路径,oss上存储的路径  user/2022/12/1/sdfdsafsdfdsf.jpg
         String folder = dtf.format(ldt);
@@ -63,9 +63,10 @@ public class FileServiceImpl implements FileService {
        // String fileName = CommonUtil.generateUUID();
       //  String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
 
-        // 在OSS上的bucket下创建 2023 这个文件夹
-        String newFileName = "2023/"+folder+"/"+ originalFileName;
+        // 在OSS上的bucket下创建 user 这个文件夹,自己的用户夹;
+        String newFileName = "user/"+folder+"/"+ originalFileName;
         //
+        String imgUrl = null;
         try
         {
             // todo：判断文件内容是否存在。。。。。
@@ -74,8 +75,7 @@ public class FileServiceImpl implements FileService {
                 PutObjectResult putObjectResult = ossClient.putObject(bucketname,newFileName,file.getInputStream());
                 //拼装返回路径
                 if(putObjectResult != null){
-                    String imgUrl = "https://"+bucketname+"."+endpoint+"/"+newFileName;
-                    JsonData.buildCodeAndMsg(1,imgUrl);
+                     imgUrl = "https://"+bucketname+"."+endpoint+"/"+newFileName;
                 }
             }else{
                 return JsonData.buildError("oss上传文件已存在,请勿再上传");
@@ -86,7 +86,7 @@ public class FileServiceImpl implements FileService {
            ex.printStackTrace();
         }
 
-        return null;
+        return  JsonData.buildFileCodeAndMsg(1,imgUrl,"文件上传成功");
     }
 
 }

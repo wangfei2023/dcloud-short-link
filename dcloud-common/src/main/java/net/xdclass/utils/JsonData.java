@@ -66,8 +66,6 @@ public class JsonData implements Serializable {
         return new JsonData(-1, null, msg);
     }
 
-
-
     /**
      * 自定义状态码和错误信息
      * @param code
@@ -75,6 +73,16 @@ public class JsonData implements Serializable {
      * @return
      */
     public static JsonData buildCodeAndMsg(int code, String msg) {
+        return new JsonData(code, null, msg);
+    }
+
+    /**
+     * 自定义文件上传状态码和错误信息
+     * @param code
+     * @param msg
+     * @return
+     */
+    public static JsonData buildFileCodeAndMsg(int code,Object data, String msg) {
         return new JsonData(code, null, msg);
     }
 
