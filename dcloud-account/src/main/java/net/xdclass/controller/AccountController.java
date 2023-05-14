@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import com.alibaba.fastjson.JSON;
 import com.google.gson.JsonObject;
 import net.xdclass.enums.BizCodeEnum;
+import net.xdclass.request.AccountLoginRequest;
 import net.xdclass.request.AccountRegisterRequest;
 import net.xdclass.service.AccountService;
 import net.xdclass.service.FileService;
@@ -52,6 +53,16 @@ public class AccountController {
     @PostMapping("register")
     public JsonData register(@RequestBody AccountRegisterRequest accountRegisterRequest){
         JsonData jsonData=accountService.register(accountRegisterRequest);
+        return jsonData;
+    }
+    /**
+     *
+     * @param accountLoginRequest
+     * @return用户登录;
+     *
+     */
+    public JsonData login(AccountLoginRequest accountLoginRequest){
+        JsonData jsonData = accountService.login(accountLoginRequest);
         return jsonData;
     }
 }

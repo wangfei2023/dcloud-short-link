@@ -1,5 +1,6 @@
 package net.xdclass.service;
 
+import net.xdclass.request.AccountLoginRequest;
 import net.xdclass.request.AccountRegisterRequest;
 import net.xdclass.utils.JsonData;
 
@@ -21,4 +22,6 @@ public interface AccountService {
      * @return
      */
     JsonData register(AccountRegisterRequest accountRegisterRequest);
+
+    JsonData login(AccountLoginRequest accountLoginRequest);
 }

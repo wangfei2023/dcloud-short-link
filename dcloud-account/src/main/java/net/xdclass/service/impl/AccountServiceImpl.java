@@ -7,6 +7,7 @@ import net.xdclass.enums.SendCodeEnum;
 import net.xdclass.manager.AccountManager;
 import net.xdclass.mapper.AccountMapper;
 import net.xdclass.model.AccountDO;
+import net.xdclass.request.AccountLoginRequest;
 import net.xdclass.request.AccountRegisterRequest;
 import net.xdclass.service.AccountService;
 import net.xdclass.service.NotifyService;
@@ -18,6 +19,8 @@ import org.bouncycastle.jcajce.provider.digest.MD5;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static javax.swing.text.html.parser.DTDConstants.MD;
 
@@ -67,6 +70,23 @@ public class AccountServiceImpl implements AccountService {
         userRegisterInitTask(accountDO);
         return JsonData.buildSuccess();
     }
+
+    @Override
+    public JsonData login(AccountLoginRequest accountLoginRequest) {
+        List<AccountDO> accountDOList = accountManager.findByPhone(accountLoginRequest.getPhone());
+        if (!ObjectUtils.isEmpty(accountDOList) && accountDOList.size()==1){
+            AccountDO accountDO = accountDOList.get(0);
+            String secret = accountDO.getSecret();
+            String md5Crypt = Md5Crypt.md5Crypt(accountLoginRequest.getPwd().getBytes(), secret);
+            if (md5Crypt.equals(accountDO.getPwd())){
+                //生成对应的token;
+            }else {
+                JsonData.buildResult(BizCodeEnum.ACCOUNT_PWD_ERROR);
+            }
+        }
+        return null;
+    }
+    //注册成功的用户发放福利;
     private void userRegisterInitTask(AccountDO accountDO){
 
     }
