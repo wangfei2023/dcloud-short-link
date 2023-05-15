@@ -73,7 +73,7 @@ spring无法扫描到异步类，没加注解@Async 或 @EnableAsync注解
         String catchValue = redisTemplate.opsForValue().get(catchKey);
         //判断缓存里面是否存在验证码;
         if (StringUtils.isNoneBlank(catchValue)) {
-            long ttl = Long.parseLong(catchKey.split("_")[1]);
+            long ttl = Long.parseLong(catchValue.split("_")[1]);
             if (CommonUtil.getCurrentTimestamp() - ttl < 60) {
                 return JsonData.buildResult(BizCodeEnum.CODE_LIMITED);
             }
@@ -90,7 +90,7 @@ spring无法扫描到异步类，没加注解@Async 或 @EnableAsync注解
             //todo:发送手机验证码
             smsComponent.send(to, smsConfig.getTemplateId(), CommonUtil.getRandomCode(6));
         }
-        return null;
+        return JsonData.buildSuccess();
     }
 
     /*

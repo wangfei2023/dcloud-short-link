@@ -72,7 +72,7 @@ public class AccountServiceImpl implements AccountService {
         userRegisterInitTask(accountDO);
         return JsonData.buildSuccess();
     }
-
+//用户登录,并生成对应的秘钥;
     @Override
     public JsonData login(AccountLoginRequest accountLoginRequest) {
         List<AccountDO> accountDOList = accountManager.findByPhone(accountLoginRequest.getPhone());
@@ -86,12 +86,14 @@ public class AccountServiceImpl implements AccountService {
                 BeanUtils.copyProperties(accountDO,loginUser);
                 String token = JWTUtil.genJsonWebToken(loginUser);
                 return JsonData.buildSuccess(token);
-
             }else {
-                JsonData.buildResult(BizCodeEnum.ACCOUNT_PWD_ERROR);
+                return JsonData.buildResult(BizCodeEnum.ACCOUNT_PWD_ERROR);
             }
+
+        }else {
+            return JsonData.buildResult(BizCodeEnum.ACCOUNT_UNREGISTER);
         }
-        return null;
+
     }
     //注册成功的用户发放福利;
     private void userRegisterInitTask(AccountDO accountDO){

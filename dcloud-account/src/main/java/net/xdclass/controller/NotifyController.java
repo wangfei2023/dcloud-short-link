@@ -77,7 +77,7 @@ public class NotifyController {
         String capcha = sendCodeRequest.getCapcha();
         if (!ObjectUtils.isEmpty(catchcaptchaKey)&&!ObjectUtils.isEmpty(capcha)&&catchcaptchaKey.equalsIgnoreCase(capcha)){
             stringRedisTemplate.delete(catchcaptchaKey);
-            JsonData jsonData = notifyService.sendCode(SendCodeEnum.USER_REGISTER, sendCodeRequest.getTo());
+            JsonData jsonData = notifyService.sendCode(SendCodeEnum.USER_REGISTER,sendCodeRequest.getTo());
             return jsonData;
         }else{
             return JsonData.buildResult(BizCodeEnum.CODE_CAPTCHA_ERROR);

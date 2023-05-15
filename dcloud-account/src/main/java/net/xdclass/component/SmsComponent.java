@@ -54,12 +54,12 @@ public class SmsComponent {
         headers.set("Authorization", "APPCODE " + smsConfig.getAppCode());
         //获取头部内容;
         HttpEntity entity = new HttpEntity<>(headers);
-       // ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-      //  log.info("url={},body={}", url, response.getBody());
-//        if (response.getStatusCode().is2xxSuccessful()) {
-//            log.info("发送短信验证码成功");
-//        } else {
-//            log.error("发送短信验证码失败:{}", response.getBody());
-//        }
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+        log.info("url={},body={}", url, response.getBody());
+        if (response.getStatusCode().is2xxSuccessful()) {
+            log.info("发送短信验证码成功");
+        } else {
+            log.error("发送短信验证码失败:{}", response.getBody());
+        }
     }
 }
