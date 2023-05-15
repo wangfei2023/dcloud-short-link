@@ -61,6 +61,7 @@ public class AccountController {
      * @return用户登录;
      *
      */
+    @PostMapping("login")
     public JsonData login(AccountLoginRequest accountLoginRequest){
         JsonData jsonData = accountService.login(accountLoginRequest);
         return jsonData;

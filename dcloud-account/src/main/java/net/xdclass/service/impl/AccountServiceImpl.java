@@ -7,11 +7,13 @@ import net.xdclass.enums.SendCodeEnum;
 import net.xdclass.manager.AccountManager;
 import net.xdclass.mapper.AccountMapper;
 import net.xdclass.model.AccountDO;
+import net.xdclass.model.LoginUser;
 import net.xdclass.request.AccountLoginRequest;
 import net.xdclass.request.AccountRegisterRequest;
 import net.xdclass.service.AccountService;
 import net.xdclass.service.NotifyService;
 import net.xdclass.utils.CommonUtil;
+import net.xdclass.utils.JWTUtil;
 import net.xdclass.utils.JsonData;
 import org.apache.commons.codec.digest.Md5Crypt;
 import org.apache.commons.lang3.ObjectUtils;
@@ -80,6 +82,11 @@ public class AccountServiceImpl implements AccountService {
             String md5Crypt = Md5Crypt.md5Crypt(accountLoginRequest.getPwd().getBytes(), secret);
             if (md5Crypt.equals(accountDO.getPwd())){
                 //生成对应的token;
+                LoginUser loginUser = LoginUser.builder().build();
+                BeanUtils.copyProperties(accountDO,loginUser);
+                String token = JWTUtil.genJsonWebToken(loginUser);
+                return JsonData.buildSuccess(token);
+
             }else {
                 JsonData.buildResult(BizCodeEnum.ACCOUNT_PWD_ERROR);
             }
