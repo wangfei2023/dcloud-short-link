@@ -9,11 +9,11 @@ spring:
         server-addr: 124.222.215.26:8848
         username: nacos
         password: nacos
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://124.222.215.26:3306/dcloud_account?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
-    username: root
-    password: 123456
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://124.222.215.26:3306/dcloud_account?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+#    username: root
+#    password: 123456
   #    配置redis
   redis:
     client-type: jedis
@@ -30,10 +30,45 @@ spring:
         min-idle: 100
         # 连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: 60000
-#配置plus打印sql日志
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 数据源 ds0 第一个数据库
+  shardingsphere:
+    datasource:
+      #数据源名称
+      names: ds0
+      ds0:
+        connectionTimeoutMilliseconds: 30000
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        idleTimeoutMilliseconds: 60000
+        jdbc-url: jdbc:mysql://124.222.215.26:3306/dcloud_account?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+        maintenanceIntervalMilliseconds: 30000
+        maxLifetimeMilliseconds: 1800000
+        maxPoolSize: 50
+        minPoolSize: 50
+        password: 123456
+        type: com.zaxxer.hikari.HikariDataSource
+        username: root
+
+    props:
+      # 打印执行的数据库以及语句
+      sql:
+        show: true
+
+    sharding:
+      tables:
+        traffic:
+          # 指定traffic表的数据分布情况，配置数据节点,行表达式标识符使用 ${...} 或 $->{...}，但前者与 Spring 本身的文件占位符冲突，所以在 Spring 环境中建议使用 $->{...}
+          actual-data-nodes: ds0.traffic_$->{0..1}
+          #水平分表策略+行表达式分片
+          table-strategy:
+            inline:
+              algorithm-expression: traffic_$->{ account_no % 2 }
+              sharding-column: account_no
+
+##配置plus打印sql日志
+#mybatis-plus:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 sms:
   app-code: 31efeec6a2424df3857dccd75cbd94c8
