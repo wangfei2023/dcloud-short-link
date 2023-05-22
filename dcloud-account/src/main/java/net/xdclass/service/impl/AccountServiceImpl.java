@@ -13,6 +13,7 @@ import net.xdclass.request.AccountRegisterRequest;
 import net.xdclass.service.AccountService;
 import net.xdclass.service.NotifyService;
 import net.xdclass.utils.CommonUtil;
+import net.xdclass.utils.IDUtil;
 import net.xdclass.utils.JWTUtil;
 import net.xdclass.utils.JsonData;
 import org.apache.commons.codec.digest.Md5Crypt;
@@ -56,8 +57,8 @@ public class AccountServiceImpl implements AccountService {
         BeanUtils.copyProperties(accountRegisterRequest,accountDO);
         //用户认证权限;
         accountDO.setAuth(AuthTypeEnum.DEFALULT.name());
-        //生成唯一性账号;模拟;
-        accountDO.setAccountNo(CommonUtil.getCurrentTimestamp());
+        //生成唯一性账号;模拟;使用雪花算法生成唯一性账号;
+        accountDO.setAccountNo(Long.valueOf(IDUtil.geneSnowFlakeID().toString()));
         //设置盐
         accountDO.setSecret("$1$"+CommonUtil.getStringNumRandom(8));
         //设置密钥(盐+密码)
