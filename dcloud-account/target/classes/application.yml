@@ -64,6 +64,14 @@ spring:
             inline:
               algorithm-expression: traffic_$->{ account_no % 2 }
               sharding-column: account_no
+#id生成策略，使用shardingjdbc雪花算法;
+      key-generator:
+        column: id
+        props:
+          worker:
+            id: 0
+        #id生成策略
+        type: SNOWFLAKE
 
 ##配置plus打印sql日志
 #mybatis-plus:

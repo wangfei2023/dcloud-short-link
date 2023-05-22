@@ -22,8 +22,8 @@ import lombok.EqualsAndHashCode;
 public class TrafficDO implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-      @TableId(value = "id", type = IdType.AUTO)
+   //使用mybatis,注释掉，使用shardingjdbc的方式;
+    //  @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
