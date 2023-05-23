@@ -1,6 +1,5 @@
 package net.xdclass.biz;
 
-import net.xdclass.AccountApplication;
 import net.xdclass.mapper.TrafficMapper;
 import net.xdclass.model.TrafficDO;
 import org.junit.Test;
