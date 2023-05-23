@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ShortLinkComponent {
     /*
-    生成短链码;
+    生成短链码;一个长连接可对应抖音、朋友圈、快手的各个短链
      */
     //todo:62个字符;
     private static final String CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
