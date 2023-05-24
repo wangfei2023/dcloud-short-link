@@ -1,0 +1,15 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: dclound-data
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 124.222.215.26:8848
+        username: nacos
+        password: nacos
+#配置plus打印sql日志
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
