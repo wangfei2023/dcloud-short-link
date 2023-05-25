@@ -1,5 +1,7 @@
 package net.xdclass.manage.Impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import net.xdclass.controller.request.LinkGroupAddRequest;
 import net.xdclass.manage.LinkGroupManage;
 import net.xdclass.mapper.LinkGroupMapper;
@@ -23,6 +25,12 @@ public class LinkGroupManageImpl implements LinkGroupManage {
     @Override
     public int add(LinkGroupDO linkGroupDO) {
         int rows = linkGroupMapper.insert(linkGroupDO);
+        return rows;
+    }
+
+    @Override
+    public int del(Long groupId,long accountNo) {
+        int rows = linkGroupMapper.delete(new QueryWrapper<LinkGroupDO>().eq("id", groupId).eq("account_no", accountNo));
         return rows;
     }
 }

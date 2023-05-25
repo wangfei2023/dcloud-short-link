@@ -34,4 +34,11 @@ public class LinkGroupServiceImpl implements LinkGroupService {
         int rows = linkGroupManage.add(linkGroupDO);
         return rows;
     }
+
+    @Override
+    public int del(Long groupId) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        int rows=linkGroupManage.del(groupId,accountNo);
+        return rows;
+    }
 }
