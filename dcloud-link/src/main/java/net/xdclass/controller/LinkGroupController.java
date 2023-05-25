@@ -5,8 +5,11 @@ import net.xdclass.controller.request.LinkGroupAddRequest;
 import net.xdclass.enums.BizCodeEnum;
 import net.xdclass.service.LinkGroupService;
 import net.xdclass.utils.JsonData;
+import net.xdclass.vo.LinkGroupVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -53,5 +56,36 @@ public class LinkGroupController {
       int rows = linkGroupService.del(groupId);
       return rows==1?JsonData.buildResult(BizCodeEnum.GROUP_ADD_SUCCESS):JsonData.buildResult(BizCodeEnum.GROUP_NOT_EXIST);
   }
+  /**
+
+   *@描述 根据id找详情;
+
+   *@参数
+
+   *@返回值
+   *
+   *@创建时间  2023/5/26 0026
+   */
+  @GetMapping
+  public JsonData detail(@PathVariable("group_id") Long groupId ){
+      LinkGroupVo linkGroupVo=linkGroupService.detail(groupId);
+      return JsonData.buildSuccess(linkGroupVo);
+  }
+
+    /**
+
+     *@描述 列出用户全部分组
+
+     *@参数
+
+     *@返回值
+     *
+     *@创建时间  2023/5/26 0026
+     */
+    @GetMapping("/list")
+    public JsonData findUserAllGroup(){
+        List<LinkGroupVo> linkGroupVoList = linkGroupService. findAllGroup();
+        return JsonData.buildSuccess(linkGroupVoList);
+    }
 }
 

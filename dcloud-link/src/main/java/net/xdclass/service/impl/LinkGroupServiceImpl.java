@@ -7,8 +7,13 @@ import net.xdclass.manage.LinkGroupManage;
 import net.xdclass.model.LinkGroupDO;
 import net.xdclass.service.LinkGroupService;
 import net.xdclass.utils.JsonData;
+import net.xdclass.vo.LinkGroupVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author : [Administrator]
@@ -40,5 +45,26 @@ public class LinkGroupServiceImpl implements LinkGroupService {
         long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
         int rows=linkGroupManage.del(groupId,accountNo);
         return rows;
+    }
+
+    @Override
+    public LinkGroupVo detail(Long groupId) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        LinkGroupDO linkGroupDo=linkGroupManage.detail(groupId,accountNo);
+        LinkGroupVo linkGroupVo = new LinkGroupVo();
+        BeanUtils.copyProperties(linkGroupDo,linkGroupVo);
+        return linkGroupVo;
+    }
+
+    @Override
+    public List<LinkGroupVo> findAllGroup() {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        List<LinkGroupDO>linkListGroup =  linkGroupManage.findAllGroup(accountNo);
+        List<LinkGroupVo> linkGroupVoList = linkListGroup.stream().map(group -> {
+            LinkGroupVo linkGroupVo = new LinkGroupVo();
+            BeanUtils.copyProperties(group, linkGroupVo);
+            return linkGroupVo;
+        }).collect(Collectors.toList());
+        return linkGroupVoList;
     }
 }
