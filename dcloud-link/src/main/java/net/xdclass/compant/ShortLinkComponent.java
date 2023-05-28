@@ -1,5 +1,7 @@
 package net.xdclass.compant;
 
+import net.xdclass.startegy.ShardingDBConfig;
+import net.xdclass.startegy.ShardingTableConfig;
 import net.xdclass.utils.CommonUtil;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +25,10 @@ public class ShortLinkComponent {
 
         long hash32 = CommonUtil.murmurHash32(param);
         String encode = encodeToBase62(hash32);
-        return encode;
+       //生成对于的短链码;
+        String shortLinkCode=ShardingDBConfig.getRandomDBPrefix()+encode+ ShardingTableConfig.getRandomDBPrefix();
+
+        return shortLinkCode;
     }
     //todo:十进制转62进制;
     private String  encodeToBase62(long num){
