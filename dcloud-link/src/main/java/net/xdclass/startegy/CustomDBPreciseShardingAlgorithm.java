@@ -31,7 +31,7 @@ public class CustomDBPreciseShardingAlgorithm implements PreciseShardingAlgorith
 
     @Override
     public String doSharding(Collection<String> availableTargetNames, PreciseShardingValue<String> preciseShardingValue) {
-        //获取短链码的第一位
+        //获取短链码的第一位(即库名)
         String codePrefix = preciseShardingValue.getValue().substring(0, 1);
         for (String targetName : availableTargetNames) {
             //获取库名的最后一位，真实配置的ds
