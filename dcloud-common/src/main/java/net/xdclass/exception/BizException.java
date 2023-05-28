@@ -1,6 +1,7 @@
 package net.xdclass.exception;
 
 import lombok.Data;
+import net.xdclass.enums.BizCodeEnum;
 
 /**
  * @Author: MrWang
@@ -19,4 +20,10 @@ public class BizException extends RuntimeException {
        this.msg=bizException.getMessage();
        this.code=bizException.getCode();
    }
+
+    public BizException (BizCodeEnum bizCodeEnum){
+        //todo:调用父类的方法;
+        this.msg=bizCodeEnum.getMessage();
+        this.code=bizCodeEnum.getCode();
+    }
 }
