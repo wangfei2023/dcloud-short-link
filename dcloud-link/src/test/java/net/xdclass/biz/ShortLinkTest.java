@@ -4,6 +4,8 @@ import com.google.common.hash.Hashing;
 import lombok.extern.slf4j.Slf4j;
 import net.xdclass.ShortLinkApplication;
 import net.xdclass.compant.ShortLinkComponent;
+import net.xdclass.manage.ShortLinkManager;
+import net.xdclass.model.ShortLinkDO;
 import net.xdclass.utils.CommonUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +30,8 @@ import java.util.Random;
 public class ShortLinkTest {
     @Autowired
     private ShortLinkComponent shortLinkComponent;
-
+    @Autowired
+    private ShortLinkManager shortLinkManager;
     @Test
     public void testMurmurHash() {
         String originalUrl = "http://www.baidu.com?" + CommonUtil.generateUUID() + "pwd=" + CommonUtil.getStringNumRandom(7);
@@ -51,4 +54,49 @@ public class ShortLinkTest {
             log.info("originalUrl:" + originalUrl + ", shortLinkCode=" + shortLinkCode);
         }
     }
-}
+   /**
+
+    *@描述 保存短链
+
+    *@参数
+
+    *@返回值
+    *
+    *@创建时间  2023/5/28 0028
+
+
+    */
+    @Test
+    public void testSaveShortLink() {
+        Random random = new Random();
+            int num1 = random.nextInt(10);
+            int num2 = random.nextInt(1000000);
+            int num3 = random.nextInt(1000000);
+            String originalUrl = num1 + "xdclass" + num2 + ".net" + num3;
+            String shortLinkCode = shortLinkComponent.createShortLinkCode(originalUrl);
+            ShortLinkDO shortLinkDO = new ShortLinkDO();
+            shortLinkDO.setDel(0);
+            shortLinkDO.setAccountNo((Long.valueOf(num3)));
+            shortLinkDO.setSign(CommonUtil.MD5(originalUrl));
+            shortLinkDO.setCode(shortLinkCode);
+            shortLinkManager.addShortLink(shortLinkDO);
+    }
+    /**
+
+     *@描述 查找短链
+
+     *@参数  []
+
+     *@返回值  void
+     *
+     *@创建时间  2023/5/28 0028
+
+
+     */
+    @Test
+    public void testFind() {
+        ShortLinkDO linkCode = shortLinkManager.findByShortLinkCode("1P7Ttl0");
+        log.info("根据短链code查询短链={}",linkCode);
+    }
+ }
+
