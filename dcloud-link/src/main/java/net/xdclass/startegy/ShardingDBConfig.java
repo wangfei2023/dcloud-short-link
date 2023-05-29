@@ -26,6 +26,10 @@ public class ShardingDBConfig {
         dbprefixList.add("0");
         dbprefixList.add("1");
         dbprefixList.add("a");
+        //加权的方式；
+//        dbprefixList.add("1");
+//        dbprefixList.add("1");
+//        dbprefixList.add("1");
     }
     public static String getRandomDBPrefix(){
         int nextInt = random.nextInt(dbprefixList.size());
