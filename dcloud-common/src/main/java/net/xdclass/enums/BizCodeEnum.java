@@ -12,6 +12,8 @@ public enum BizCodeEnum {
     GROUP_REPEAT(23001,"分组名重复"),
     GROUP_OPER_FAIL(23503,"分组名操作失败"),
     GROUP_NOT_EXIST(23404,"分组不存在"),
+    GROUP_ADD_FAIL(23405,"分组添加失败"),
+    GROUP_ADD_SUCCESS(23405,"分组添加成功"),
 
 
 
@@ -88,7 +90,12 @@ public enum BizCodeEnum {
     /**
      * 文件相关
      */
-    FILE_UPLOAD_USER_IMG_FAIL(700101,"用户头像文件上传失败");
+    FILE_UPLOAD_USER_IMG_FAIL(700101,"用户头像文件上传失败"),
+
+    /**
+     * 数据库路由信息
+     */
+    DB_ROUTE_NOT_FOUND(800101,"数据库未找到");
     @Getter
     private String message;
     @Getter

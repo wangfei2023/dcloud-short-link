@@ -1,14 +1,12 @@
-package net.xdclass.model;
+package net.xdclass.vo;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import java.util.Date;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
-
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -19,14 +17,9 @@ import lombok.EqualsAndHashCode;
  * @since 2023-05-23
  */
 @Data
-@Builder
 @EqualsAndHashCode(callSuper = false)
-@TableName("link_group")
-public class LinkGroupDO implements Serializable {
+public class LinkGroupVo implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
-//      @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
