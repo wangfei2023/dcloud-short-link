@@ -1,5 +1,6 @@
 package net.xdclass.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import net.xdclass.model.GroupCodeMappingDO;
 
