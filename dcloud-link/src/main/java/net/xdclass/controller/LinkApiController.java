@@ -50,8 +50,8 @@ public class LinkApiController {
     public void dispath(@PathVariable("shortLinkCode") String linkCode,
                         HttpServletRequest request,
                         HttpServletResponse response
-                        ){
-       //判断短链码是否合规;
+    ){
+        //判断短链码是否合规;
         log.info("前端传入短链码={}",linkCode);
         if (isLetterDigit(linkCode)){
             ShortLinkVo shortLinkVo=shortLinkService.parseLinkCode(linkCode);

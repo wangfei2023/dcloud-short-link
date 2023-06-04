@@ -2,11 +2,15 @@ package net.xdclass.vo;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
+import java.sql.CallableStatement;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
@@ -18,6 +22,8 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Setter
+@Getter
 public class ShortLinkVo implements Serializable {
 
 
@@ -87,6 +93,7 @@ public class ShortLinkVo implements Serializable {
      * 链接产品层级：FIRST 免费青铜、SECOND黄金、THIRD钻石
      */
     private String linkType;
+
 
 
 }
