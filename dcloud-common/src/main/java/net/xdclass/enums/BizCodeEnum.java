@@ -95,7 +95,12 @@ public enum BizCodeEnum {
     /**
      * 数据库路由信息
      */
-    DB_ROUTE_NOT_FOUND(800101,"数据库未找到");
+    DB_ROUTE_NOT_FOUND(800101,"数据库未找到"),
+
+    /**
+     * rabbitmq消费异常
+     */
+    MQ_CONSUME_EXCEPTION(900101,"mq消费异常");
     @Getter
     private String message;
     @Getter
