@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 //用于c端解析;
+//rabbitmq是属于懒加载模式，需要@Bean注解
 @Component
 @Slf4j
 @RabbitListener(queues = "short_link.add.link.queue")

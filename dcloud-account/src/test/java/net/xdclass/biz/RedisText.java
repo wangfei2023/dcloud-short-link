@@ -45,9 +45,9 @@ public class RedisText {
     //使用jedisconfig连接redis
     @Test
     public void jedisConnect()  {
-        Jedis jedis = jedisPool.getResource();
-        jedis.get("link");
-     new ArrayList<>();
-        List.of("1","2","3");
+//        Jedis jedis = jedisPool.getResource();
+//        jedis.get("link");
+//        ArrayList<Integer> arrayList = new ArrayList<Integer>(List.of("1", "2", "3"));
+
     }
 }
