@@ -38,7 +38,7 @@ public class ShortLinkAddMappingMQListener {
             throw new BizException(BizCodeEnum.MQ_CONSUME_EXCEPTION);
         }
         log.info("消费成功{}", eventMessage);
-        //确认消息消费成功
-        channel.basicAck(msgTag, false);
+        //确认消息消费成功(手动确认,现在要改为自动确认)
+      ///  channel.basicAck(msgTag, false);
     }
 }

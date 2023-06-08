@@ -41,6 +41,6 @@ public class ShortLinkAddListenerMQListener {
         }
         log.info("消费成功{}", eventMessage);
         //确认消息消费成功
-        channel.basicAck(msgTag, false);
+     //   channel.basicAck(msgTag, false);
     }
 }
