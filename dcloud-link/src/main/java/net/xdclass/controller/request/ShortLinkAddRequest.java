@@ -2,6 +2,8 @@ package net.xdclass.controller.request;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class ShortLinkAddRequest {
      /*
@@ -22,7 +24,7 @@ public class ShortLinkAddRequest {
       /*
    域名的id
     */
-    private String domainId;
+    private Long domainId;
 
     /*
    域名的类型
@@ -32,5 +34,5 @@ public class ShortLinkAddRequest {
     /*
     过期时间
    */
-    private String expired;
+    private Date expired;
 }

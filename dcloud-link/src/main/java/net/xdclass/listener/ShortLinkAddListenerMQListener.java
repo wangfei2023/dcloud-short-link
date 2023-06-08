@@ -3,11 +3,14 @@ package net.xdclass.listener;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import net.xdclass.enums.BizCodeEnum;
+import net.xdclass.enums.EventMessageType;
 import net.xdclass.exception.BizException;
 import net.xdclass.model.EventMessage;
+import net.xdclass.service.ShortLinkService;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -17,6 +20,8 @@ import java.io.IOException;
 @Slf4j
 @RabbitListener(queues = "short_link.add.link.queue")
 public class ShortLinkAddListenerMQListener {
+    @Autowired
+    private ShortLinkService shortLinkService;
     /**
      *
      *
@@ -34,6 +39,8 @@ public class ShortLinkAddListenerMQListener {
 
         try {
             //TODO 处理业务
+            eventMessage.setEventMessageType(EventMessageType.SHORT_LINK_ADD_LINK.name());
+            shortLinkService.handerAddShortLink(eventMessage);
         } catch (Exception e) {
             // 处理业务失败，还要进行其他操作，比如记录失败原因
             log.error("消费失败{}", eventMessage);

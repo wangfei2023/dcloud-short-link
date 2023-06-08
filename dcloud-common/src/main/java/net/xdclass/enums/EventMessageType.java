@@ -1,8 +1,31 @@
 package net.xdclass.enums;
 //消息类型;
 public enum EventMessageType {
-    /*
-    短链创建;
+   /**
+    * @description 短链创建
+    *
+    * @return
+    * @author
+    * @date
+    */
+    SHORT_LINK_ADD,
+
+
+    /**
+     * @description 短链创建C端
+     *
+     * @return
+     * @author
+     * @date
      */
-    SHORT_LINK_ADD;
+    SHORT_LINK_ADD_LINK,
+
+    /**
+     * @description 短链创建B端
+     *
+     * @return
+     * @author
+     * @date
+     */
+    SHORT_LINK_ADD_MAPPING;
 }
