@@ -11,12 +11,11 @@ import net.xdclass.enums.EventMessageType;
 import net.xdclass.enums.ShortLinkStateEnum;
 import net.xdclass.interceptor.LoginInterceptor;
 import net.xdclass.manage.DomainManage;
+import net.xdclass.manage.GroupCodeMappingManager;
 import net.xdclass.manage.LinkGroupManage;
 import net.xdclass.manage.ShortLinkManager;
-import net.xdclass.model.DomainDO;
-import net.xdclass.model.EventMessage;
-import net.xdclass.model.LinkGroupDO;
-import net.xdclass.model.ShortLinkDO;
+import net.xdclass.mapper.LinkGroupMapper;
+import net.xdclass.model.*;
 import net.xdclass.service.ShortLinkService;
 import net.xdclass.utils.CommonUtil;
 import net.xdclass.utils.IDUtil;
@@ -55,6 +54,8 @@ public class ShortLinkServiceImpl implements ShortLinkService {
     private LinkGroupManage  linkGroupManage;
     @Autowired
     private ShortLinkComponent shortLinkComponent;
+    @Autowired
+    private GroupCodeMappingManager groupCodeMappingManager;
     @Override
     public ShortLinkVo parseLinkCode(String linkCode) {
         ShortLinkDO shortLinkDO = shortLinkManager.findByShortLinkCode(linkCode);
@@ -99,21 +100,47 @@ public class ShortLinkServiceImpl implements ShortLinkService {
         String originalUrlDigest = CommonUtil.MD5(shortLinkAddRequest.getOriginalUrl());
         //生成短链
         String shortLinkCode = shortLinkComponent.createShortLinkCode(originalUrlDigest);
-        ShortLinkDO shortLinkDO = ShortLinkDO.builder()
-                .accountNo(accountNo)
-                .code(shortLinkCode)
-                .title(shortLinkAddRequest.getTitle())
-                .originalUrl(shortLinkAddRequest.getOriginalUrl())
-                .domain(domainDO.getValue())
-                .groupId(linkGroupDO.getId())
-                .expired(shortLinkAddRequest.getExpired())
-                .sign(originalUrlDigest)
-                .state(ShortLinkStateEnum.ACTIVE.name())
-                .del(0)
-                .build();
-        //保存到数据库;
-        shortLinkManager.addShortLink(shortLinkDO);
+        ShortLinkDO ShortLinkCode = shortLinkManager.findByShortLinkCode(shortLinkCode);
+        if (ShortLinkCode==null){}
+
+        if (EventMessageType.SHORT_LINK_ADD_LINK.name().equals(eventMessageType)) {
+            //c端处理
+            ShortLinkDO shortLinkDO = ShortLinkDO.builder()
+                    .accountNo(accountNo)
+                    .code(shortLinkCode)
+                    .title(shortLinkAddRequest.getTitle())
+                    .originalUrl(shortLinkAddRequest.getOriginalUrl())
+                    .domain(domainDO.getValue())
+                    .groupId(linkGroupDO.getId())
+                    .expired(shortLinkAddRequest.getExpired())
+                    .sign(originalUrlDigest)
+                    .state(ShortLinkStateEnum.ACTIVE.name())
+                    .del(0)
+                    .build();
+            //保存到数据库;
+            shortLinkManager.addShortLink(shortLinkDO);
+            return true;
+        }else if (EventMessageType.SHORT_LINK_ADD_MAPPING.name().equals(eventMessageType)){
+            //b端处理
+            GroupCodeMappingDO groupCodeMappingDO = GroupCodeMappingDO.builder()
+                    .accountNo(accountNo)
+                    .code(shortLinkCode)
+                    .title(shortLinkAddRequest.getTitle())
+                    .originalUrl(shortLinkAddRequest.getOriginalUrl())
+                    .domain(domainDO.getValue())
+                    .groupId(linkGroupDO.getId())
+                    .expired(shortLinkAddRequest.getExpired())
+                    .sign(originalUrlDigest)
+                    .state(ShortLinkStateEnum.ACTIVE.name())
+                    .del(0)
+                    .build();
+            //保存到数据库;
+            groupCodeMappingManager.add(groupCodeMappingDO);
+            return true;
+        }
+
         return false;
+
     }
 
     /**
