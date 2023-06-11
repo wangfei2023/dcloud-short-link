@@ -76,5 +76,5 @@ public interface GroupCodeMappingManager {
      * @author
      * @date
      */
-    void findByCodeAndGroupId(String shortLinkCode, Long groupId, Long accountNo);
+    GroupCodeMappingDO findByCodeAndGroupId(String shortLinkCode, Long groupId, Long accountNo);
 }
