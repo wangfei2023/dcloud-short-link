@@ -31,8 +31,11 @@ public class ShardingDBConfig {
 //        dbprefixList.add("1");
 //        dbprefixList.add("1");
     }
-    public static String getRandomDBPrefix(){
-        int nextInt = random.nextInt(dbprefixList.size());
-        return dbprefixList.get(nextInt);
+    public static String getRandomDBPrefix(String code){
+        //int nextInt = random.nextInt(dbprefixList.size());
+//       生成固定的短链码
+        int hashCode = code.hashCode();
+       int index= Math.abs(hashCode)%dbprefixList.size();
+       return  dbprefixList.get(index);
     }
 }

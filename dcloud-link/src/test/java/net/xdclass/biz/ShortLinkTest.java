@@ -98,5 +98,25 @@ public class ShortLinkTest {
         ShortLinkDO linkCode = shortLinkManager.findByShortLinkCode("1P7Ttl0");
         log.info("根据短链code查询短链={}",linkCode);
     }
+    /**
+
+     *@描述 随机生成短链码
+
+     *@参数  []
+
+     *@返回值  void
+     *
+     *@创建时间  2023/5/28 0028
+
+
+     */
+    @Test
+    public void testGenCode() {
+        for (int i = 0; i < 5; i++) {
+            String url="https://xdclass.net/download.html";
+            String shortlinkCode=shortLinkComponent.createShortLinkCode(url);
+            System.out.println(shortlinkCode);
+        }
+    }
  }
 

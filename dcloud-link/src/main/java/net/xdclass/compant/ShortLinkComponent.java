@@ -26,7 +26,7 @@ public class ShortLinkComponent {
         long hash32 = CommonUtil.murmurHash32(param);
         String encode = encodeToBase62(hash32);
        //生成对于的短链码;
-        String shortLinkCode=ShardingDBConfig.getRandomDBPrefix()+encode+ ShardingTableConfig.getRandomDBPrefix();
+        String shortLinkCode=ShardingDBConfig.getRandomDBPrefix(encode)+encode+ ShardingTableConfig.getRandomTablePrefix(encode);
 
         return shortLinkCode;
     }

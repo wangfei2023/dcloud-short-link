@@ -6,9 +6,8 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import jdk.nashorn.internal.objects.annotations.Constructor;
+import lombok.*;
 
 /**
  * <p>
@@ -22,6 +21,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 @TableName("short_link")
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ShortLinkDO implements Serializable {
 
     private static final long serialVersionUID = 1L;

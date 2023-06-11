@@ -24,7 +24,8 @@ public class CommonLinkTest {
     @Test
     public void testRandomDB(){
         for (int i = 0; i < 20; i++) {
-           log.info(ShardingDBConfig.getRandomDBPrefix());
+            String code =null;
+           log.info(ShardingDBConfig.getRandomDBPrefix(code));
         }
 
     }

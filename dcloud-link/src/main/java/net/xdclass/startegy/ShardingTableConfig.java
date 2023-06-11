@@ -25,8 +25,10 @@ public class ShardingTableConfig {
         tableprefixList.add("0");
         tableprefixList.add("a");
     }
-    public static String getRandomDBPrefix(){
-        int nextInt = random.nextInt(tableprefixList.size());
-        return tableprefixList.get(nextInt);
+    public static String getRandomTablePrefix(String code){
+        //int nextInt = random.nextInt(tableprefixList.size());
+        int hashCode = code.hashCode();
+        int index = Math.abs(hashCode)%tableprefixList.size();
+        return tableprefixList.get(index);
     }
 }
