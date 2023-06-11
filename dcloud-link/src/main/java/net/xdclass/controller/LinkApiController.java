@@ -57,7 +57,8 @@ public class LinkApiController {
             ShortLinkVo shortLinkVo=shortLinkService.parseLinkCode(linkCode);
             //判断是否过期可用;
             if (isVisitable(shortLinkVo)) {
-                response.setHeader("Location",shortLinkVo.getOriginalUrl());
+                String originalUrl = CommonUtil.removeUrlPrefix(shortLinkVo.getOriginalUrl());
+                response.setHeader("Location",originalUrl);
                 //302跳转;
                 response.setStatus(HttpStatus.FOUND.value());
 

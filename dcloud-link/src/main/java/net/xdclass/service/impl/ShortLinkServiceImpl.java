@@ -70,6 +70,8 @@ public class ShortLinkServiceImpl implements ShortLinkService {
     @Override
     public JsonData createShortLink(ShortLinkAddRequest request) {
         long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        String newOriginalUrl = request.getOriginalUrl();
+        request.setOriginalUrl(CommonUtil.addUrlPrefix(newOriginalUrl));
         EventMessage eventMessage = EventMessage.builder().accountNo(accountNo)
                 .content(JsonUtil.obj2Json(request))
                 .messageId(IDUtil.geneSnowFlakeID().toString())

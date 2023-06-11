@@ -1,5 +1,6 @@
 package net.xdclass.utils;
 
+import com.alibaba.csp.sentinel.util.IdUtil;
 import com.google.common.hash.Hashing;
 import lombok.extern.slf4j.Slf4j;
 
@@ -187,4 +188,40 @@ public class CommonUtil {
         long murmur32 = Hashing.murmur3_32().hashUnencodedChars(param).padToLong();
         return murmur32;
     }
+    /**
+     * @description url增加前缀;
+     *
+     * @return
+     * @author
+     * @date
+     */
+    public static String addUrlPrefix(String url){
+        return IDUtil.geneSnowFlakeID() + "&" +url;
+    }
+    /**
+     * @description 移除url前缀;
+     *
+     * @return
+     * @author
+     * @date
+     */
+    public static String removeUrlPrefix(String url){
+        return  url.substring(url.indexOf("&") + 1);
+    }
+    /**
+     * @description 如果短链码重复,调用这个方法;
+     *1234554545&5685855
+     *
+     * @return
+     * @author
+     * @date
+     */
+    public static String addUrlPrefixVersion(String url){
+            String result = url.substring(0,url.indexOf("&"));
+            //原始地址
+            String originalUrl = url.substring(url.indexOf("&")+1);
+            //新id编号
+            Long newIdValue = Long.parseLong(result)+1;
+            return newIdValue+"&"+originalUrl;
+        }
 }
