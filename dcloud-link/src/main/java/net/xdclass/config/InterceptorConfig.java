@@ -18,6 +18,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 .addPathPatterns("/api/link/*/**", "/api/group/*/**","/api/domain/*/**")
 
                 //排除不拦截
-                .excludePathPatterns("");
+                .excludePathPatterns("/api/domain/v1/test");
     }
 }

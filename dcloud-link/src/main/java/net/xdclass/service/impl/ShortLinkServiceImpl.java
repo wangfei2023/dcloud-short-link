@@ -27,8 +27,12 @@ import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+
+import java.util.Arrays;
 
 /**
  * @author : [Administrator]
@@ -56,6 +60,8 @@ public class ShortLinkServiceImpl implements ShortLinkService {
     private ShortLinkComponent shortLinkComponent;
     @Autowired
     private GroupCodeMappingManager groupCodeMappingManager;
+    @Autowired
+    private RedisTemplate<Object,Object> redisTemplate;
     @Override
     public ShortLinkVo parseLinkCode(String linkCode) {
         ShortLinkDO shortLinkDO = shortLinkManager.findByShortLinkCode(linkCode);
@@ -102,6 +108,12 @@ public class ShortLinkServiceImpl implements ShortLinkService {
         String originalUrlDigest = CommonUtil.MD5(shortLinkAddRequest.getOriginalUrl());
         //生成短链
         String shortLinkCode = shortLinkComponent.createShortLinkCode(originalUrlDigest);
+        //todo:加锁
+        String script = "if redis.call('EXISTS',KEYS[1])==0 then redis.call('set',KEYS[1],ARGV[1]); redis.call('expire',KEYS[1],ARGV[2]); return 1;" +
+                " elseif redis.call('get',KEYS[1]) == ARGV[1] then return 2;" +
+                " else return 0; end;";
+        Long result = redisTemplate.execute(new
+        DefaultRedisScript<>(script, Long.class), Arrays.asList(shortLinkCode), accountNo,100);
         ShortLinkDO ShortLinkCode = shortLinkManager.findByShortLinkCode(shortLinkCode);
         if (ShortLinkCode==null){}
 
@@ -123,6 +135,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
             shortLinkManager.addShortLink(shortLinkDO);
             return true;
         }else if (EventMessageType.SHORT_LINK_ADD_MAPPING.name().equals(eventMessageType)){
+            groupCodeMappingManager.findByCodeAndGroupId(shortLinkCode,linkGroupDO.getId(),accountNo);
             //b端处理
             GroupCodeMappingDO groupCodeMappingDO = GroupCodeMappingDO.builder()
                     .accountNo(accountNo)

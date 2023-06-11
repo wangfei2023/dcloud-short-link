@@ -81,6 +81,17 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
         );
         return rows;
     }
+
+    @Override
+    public void findByCodeAndGroupId(String shortLinkCode, Long groupId, Long accountNo) {
+        GroupCodeMappingDO groupCodeMappingDO = groupCodeMappingMapper.selectOne(new QueryWrapper<GroupCodeMappingDO>()
+                .eq("code", shortLinkCode)
+                .eq("account_no", accountNo)
+                .eq("group_id", groupId)
+
+        );
+    }
+
     private GroupCodeMappingVO beanProcess(GroupCodeMappingDO groupPageCodeMappingDO){
         GroupCodeMappingVO groupCodeMappingVO = new GroupCodeMappingVO();
         BeanUtils.copyProperties(groupPageCodeMappingDO,groupCodeMappingVO);

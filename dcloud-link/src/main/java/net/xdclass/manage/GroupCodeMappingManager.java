@@ -60,6 +60,21 @@ public interface GroupCodeMappingManager {
 
      */
     Map<String,Object> pageShortLinkByGroupId(Integer page,Integer size,Long accountNo,Long groupId);
-
+    
+/**
+ * @description TODO 
+ * 更新短链码状态       
+ * @return
+ * @author 
+ * @date  
+ */
     int updateGroupCodeMappingState(String shortLinkCode , Long accountNo, Long groupId, ShortLinkStateEnum shortLinkStateEnum);
+    /**
+     * @description TODO
+     * 查找是否存在短链码
+     * @return
+     * @author
+     * @date
+     */
+    void findByCodeAndGroupId(String shortLinkCode, Long groupId, Long accountNo);
 }
