@@ -8,6 +8,7 @@ import net.xdclass.exception.BizException;
 import net.xdclass.model.EventMessage;
 import net.xdclass.service.ShortLinkService;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import java.io.IOException;
 //rabbitmq是属于懒加载模式，需要@Bean注解
 @Component
 @Slf4j
-@RabbitListener(queues = "short_link.add.link.queue")
+@RabbitListener(queuesToDeclare = {@Queue("short_link.add.link.queue")})
 public class ShortLinkAddListenerMQListener {
     @Autowired
     private ShortLinkService shortLinkService;

@@ -112,9 +112,12 @@ public class AccountServiceImpl implements AccountService {
         AccountDO accountDO = new AccountDO();
         BeanUtils.copyProperties(request,accountDO);
         accountDO.setSecret("$1$"+CommonUtil.getStringNumRandom(8));
+        accountDO.setAccountNo(Long.valueOf(IDUtil.geneSnowFlakeID().toString()));
         //todo:给用户注册密码加密;
         String cryptPwd = Md5Crypt.md5Crypt(accountDO.getPwd().getBytes(), accountDO.getSecret());
         accountDO.setPwd(cryptPwd);
         System.out.println(accountDO.getPwd());
+        System.out.println(accountDO.getSecret());
+        System.out.println(accountDO.getAccountNo());
     }
 }

@@ -195,7 +195,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
 
     private DomainDO checkDomain(String domainType,Long domainId,Long accountNo){
         DomainDO domainDO;
-        if (DomainTypeEnum.CUSTOM.name().equals("domainType")){
+        if (DomainTypeEnum.CUSTOM.name().equals(domainType)){
              domainDO = domainManage.findById(domainId, accountNo);
         }else{
             domainDO = domainManage.findDomainTypeAndId(domainId,DomainTypeEnum.OFFICIAL);

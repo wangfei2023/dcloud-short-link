@@ -6,6 +6,7 @@ import net.xdclass.service.ShortLinkService;
 import net.xdclass.utils.JsonData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -18,13 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
  * @author MrWang
  * @since 2023-05-23
  */
+//b端开发;
 @RestController
 @RequestMapping("/api/link/v1")
 public class ShortLinkController {
     @Autowired
     private ShortLinkService shortLinkService;
     @PostMapping("/add")
-     public JsonData createShortLink(ShortLinkAddRequest request){
+     public JsonData createShortLink(@RequestBody  ShortLinkAddRequest request){
         JsonData jsonData= shortLinkService.createShortLink(request);
         return jsonData;
      }
