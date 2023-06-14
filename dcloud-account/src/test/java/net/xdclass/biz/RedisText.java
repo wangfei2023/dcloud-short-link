@@ -1,6 +1,7 @@
 package net.xdclass.biz;
 
 import net.xdclass.AccountApplication;
+import net.xdclass.utils.TimeUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -17,10 +18,7 @@ import redis.clients.jedis.JedisPool;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = AccountApplication.class)
@@ -42,12 +40,14 @@ public class RedisText {
         workbook.write(fileOutputStream);
         fileOutputStream.close();
     }
-    //使用jedisconfig连接redis
+    //使用jedisconfig连接redis=-
     @Test
     public void jedisConnect()  {
-//        Jedis jedis = jedisPool.getResource();
-//        jedis.get("link");
-//        ArrayList<Integer> arrayList = new ArrayList<Integer>(List.of("1", "2", "3"));
+        Jedis jedis = jedisPool.getResource();
+        jedis.hset("link","nice", TimeUtil.format(new Date()));
+        jedis.get("link");
+        List<Jedis> jedisList = List.of(jedis);
+        System.out.println(jedisList);
 
     }
 }
