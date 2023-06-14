@@ -205,6 +205,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
                 .content(JsonUtil.obj2Json(request))
                 .eventMessageType(EventMessageType.SHORT_LINK_DEL.name());
         //todo:
+        rabbitTemplate.convertAndSend(rabbitMQConfig.getShortLinkEventExchange(),rabbitMQConfig.getShortLinkDelRoutingKey(),eventMessage);
         return JsonData.buildSuccess();
     }
 
