@@ -8,7 +8,9 @@ import net.minidev.json.JSONUtil;
 import net.xdclass.compant.ShortLinkComponent;
 import net.xdclass.config.RabbitMQConfig;
 import net.xdclass.controller.request.ShortLinkAddRequest;
+import net.xdclass.controller.request.ShortLinkDelRequest;
 import net.xdclass.controller.request.ShortLinkPageRequest;
+import net.xdclass.controller.request.ShortLinkUpdateRequest;
 import net.xdclass.enums.DomainTypeEnum;
 import net.xdclass.enums.EventMessageType;
 import net.xdclass.enums.ShortLinkStateEnum;
@@ -192,6 +194,29 @@ public class ShortLinkServiceImpl implements ShortLinkService {
         long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
         Map<String, Object> pageResult = groupCodeMappingManager.pageShortLinkByGroupId(request.getPage(), request.getSize(), accountNo, request.getGroupId());
         return pageResult;
+    }
+
+    @Override
+    public JsonData del(ShortLinkDelRequest request) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        EventMessage.EventMessageBuilder eventMessage = EventMessage.builder()
+                .accountNo(accountNo)
+                .messageId(IDUtil.geneSnowFlakeID().toString())
+                .content(JsonUtil.obj2Json(request))
+                .eventMessageType(EventMessageType.SHORT_LINK_ADD.name());
+        //todo:
+        return JsonData.buildSuccess();
+    }
+
+    @Override
+    public JsonData update(ShortLinkUpdateRequest request) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        EventMessage.EventMessageBuilder eventMessage = EventMessage.builder()
+                .accountNo(accountNo)
+                .messageId(IDUtil.geneSnowFlakeID().toString())
+                .content(JsonUtil.obj2Json(request))
+                .eventMessageType(EventMessageType.SHORT_LINK_UPDATE.name());
+        return JsonData.buildSuccess();
     }
 
     /**

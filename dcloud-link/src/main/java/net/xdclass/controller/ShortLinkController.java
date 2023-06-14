@@ -2,7 +2,9 @@ package net.xdclass.controller;
 
 
 import net.xdclass.controller.request.ShortLinkAddRequest;
+import net.xdclass.controller.request.ShortLinkDelRequest;
 import net.xdclass.controller.request.ShortLinkPageRequest;
+import net.xdclass.controller.request.ShortLinkUpdateRequest;
 import net.xdclass.service.ShortLinkService;
 import net.xdclass.utils.JsonData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,31 @@ public class ShortLinkController {
     public JsonData  pageShortLinkByGroupId(@RequestBody ShortLinkPageRequest request){
        Map<String,Object> pageResult=shortLinkService.pageShortLinkByGroupId(request);
        return JsonData.buildSuccess(pageResult);
+    }
+    /**
+     * @description TODO
+     *删除短链
+     * @return
+     * @author
+     * @date
+     */
+    @PostMapping("/del")
+    public JsonData  del(@RequestBody ShortLinkDelRequest request){
+        JsonData jsonData=shortLinkService.del(request);
+        return JsonData.buildSuccess(jsonData);
+    }
+
+    /**
+     * @description TODO
+     *更新短链
+     * @return
+     * @author
+     * @date
+     */
+    @PostMapping("/del")
+    public JsonData  update (@RequestBody ShortLinkUpdateRequest request){
+        JsonData jsonData=shortLinkService.update(request);
+        return JsonData.buildSuccess(jsonData);
     }
 }
 
