@@ -203,7 +203,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
                 .accountNo(accountNo)
                 .messageId(IDUtil.geneSnowFlakeID().toString())
                 .content(JsonUtil.obj2Json(request))
-                .eventMessageType(EventMessageType.SHORT_LINK_ADD.name());
+                .eventMessageType(EventMessageType.SHORT_LINK_DEL.name());
         //todo:
         return JsonData.buildSuccess();
     }

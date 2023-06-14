@@ -30,7 +30,7 @@ public enum EventMessageType {
     SHORT_LINK_ADD_MAPPING,
 
  /**
-  * @description 短链创建
+  * @description 短链删除
   *
   * @return
   * @author
