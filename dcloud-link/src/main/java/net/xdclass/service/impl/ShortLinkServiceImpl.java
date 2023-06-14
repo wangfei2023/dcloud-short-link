@@ -8,6 +8,7 @@ import net.minidev.json.JSONUtil;
 import net.xdclass.compant.ShortLinkComponent;
 import net.xdclass.config.RabbitMQConfig;
 import net.xdclass.controller.request.ShortLinkAddRequest;
+import net.xdclass.controller.request.ShortLinkPageRequest;
 import net.xdclass.enums.DomainTypeEnum;
 import net.xdclass.enums.EventMessageType;
 import net.xdclass.enums.ShortLinkStateEnum;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -183,6 +185,13 @@ public class ShortLinkServiceImpl implements ShortLinkService {
 
         return false;
 
+    }
+
+    @Override
+    public Map<String, Object> pageShortLinkByGroupId(ShortLinkPageRequest request) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        Map<String, Object> pageResult = groupCodeMappingManager.pageShortLinkByGroupId(request.getPage(), request.getSize(), accountNo, request.getGroupId());
+        return pageResult;
     }
 
     /**

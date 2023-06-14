@@ -53,6 +53,7 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
                 .eq("code", shortLinkCode)
                 .eq("account_no", accountNo)
                 .eq("group_id", groupId).set("del",1)
+                .eq("del",0)
         );
         return rows;
     }
@@ -63,6 +64,8 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
         Page<GroupCodeMappingDO> groupPage = groupCodeMappingMapper.selectPage(groupPageCodeMappingDO, new QueryWrapper<GroupCodeMappingDO>()
                 .eq("account_no", accountNo)
                 .eq("group_id", groupId)
+                //删除的数据不返回;
+                .eq("del",0)
         );
         HashMap<String, Object> map = new HashMap<>(3);
         map.put("total_page",groupPageCodeMappingDO.getPages());
@@ -78,6 +81,7 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
                 .eq("code", shortLinkCode)
                 .eq("account_no", accountNo)
                 .eq("group_id", groupId)
+                .eq("del",0).set("state",shortLinkStateEnum.name())
         );
         return rows;
     }
