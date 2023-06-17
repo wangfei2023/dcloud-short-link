@@ -39,15 +39,7 @@ public interface ShortLinkService {
      */
     JsonData createShortLink(ShortLinkAddRequest request);
 
-    /**
-     * @description 处理新增短链消息
-     *
-     * @return
-     * @author
-     * @date
-     */
 
-    boolean handerAddShortLink(EventMessage eventMessage);
     /**
      * @description TODO
      * 分页查找短链
@@ -57,6 +49,18 @@ public interface ShortLinkService {
      *
      */
     Map<String,Object>  pageShortLinkByGroupId(ShortLinkPageRequest request);
+
+
+    /**
+     * @description TODO
+     *更新短链
+     * @return
+     * @author
+     * @date
+     */
+
+    JsonData update(ShortLinkUpdateRequest request);
+
     /**
      * @description TODO
      * 删除短链
@@ -68,12 +72,22 @@ public interface ShortLinkService {
     JsonData del(ShortLinkDelRequest request);
 
     /**
-     * @description TODO
-     *更新短链
+     * @description 处理新增短链消息
+     *
      * @return
      * @author
      * @date
      */
 
-    JsonData update(ShortLinkUpdateRequest request);
+    boolean handerAddShortLink(EventMessage eventMessage);
+
+    /**
+     * @description 处理修改短链消息
+     *
+     * @return
+     * @author
+     * @date
+     */
+
+    boolean handerUpdateShortLink(EventMessage eventMessage);
 }
