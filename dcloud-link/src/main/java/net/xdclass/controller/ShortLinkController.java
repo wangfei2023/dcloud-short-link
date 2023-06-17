@@ -68,7 +68,7 @@ public class ShortLinkController {
      * @author
      * @date
      */
-    @PostMapping("/del")
+    @PostMapping("/update")
     public JsonData  update (@RequestBody ShortLinkUpdateRequest request){
         JsonData jsonData=shortLinkService.update(request);
         return JsonData.buildSuccess(jsonData);
