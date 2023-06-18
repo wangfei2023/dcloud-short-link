@@ -97,6 +97,18 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
         return groupCodeMappingDO;
     }
 
+    @Override
+    public int update(GroupCodeMappingDO groupCodeMappingDO) {
+       int rows= groupCodeMappingMapper.update(null,new UpdateWrapper<GroupCodeMappingDO>()
+        .eq("id",groupCodeMappingDO.getId())
+        .eq("account",groupCodeMappingDO.getAccountNo())
+        .eq("group_id",groupCodeMappingDO.getGroupId())
+        .set("titlt",groupCodeMappingDO.getTitle())
+        .set("domain",groupCodeMappingDO.getDomain())
+        );
+        return rows;
+    }
+
     private GroupCodeMappingVO beanProcess(GroupCodeMappingDO groupPageCodeMappingDO){
         GroupCodeMappingVO groupCodeMappingVO = new GroupCodeMappingVO();
         BeanUtils.copyProperties(groupPageCodeMappingDO,groupCodeMappingVO);

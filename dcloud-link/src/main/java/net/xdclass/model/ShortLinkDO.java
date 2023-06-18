@@ -17,12 +17,17 @@ import lombok.*;
  * @author MrWang
  * @since 2023-05-23
  */
+/*
+b端短链处理;
+
+ */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("short_link")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
 public class ShortLinkDO implements Serializable {
 
     private static final long serialVersionUID = 1L;

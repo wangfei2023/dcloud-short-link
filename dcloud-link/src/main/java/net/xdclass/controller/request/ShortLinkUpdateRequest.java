@@ -9,32 +9,39 @@
 package net.xdclass.controller.request;
 
 import lombok.Data;
-
+/*
+用于B端,c端消息处理;
+ */
 @Data
 public class ShortLinkUpdateRequest {
-    /*
- 组
-  */
-    private int groupId;
-    /*
-  映射id
-   */
-    private int mappingId;
-    /*
-    短链码
+    /**
+     * 组
+     */
+    private Long groupId;
+
+    /**
+     * 映射id
+     */
+    private Long mappingId;
+
+    /**
+     * 短链码
      */
     private String code;
 
-    /*
-  标题
-*/
+
+    /**
+     * 标题
+     */
     private String title;
-    /*
-  域名id
-   */
-    private Long domain;
-    /*
-   域名类型
+
+    /**
+     * 域名id
+     */
+    private Long domainId;
+
+    /**
+     * 域名类型
      */
     private String domainType;
 }

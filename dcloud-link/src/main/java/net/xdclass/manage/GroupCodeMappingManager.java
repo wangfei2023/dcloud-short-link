@@ -77,4 +77,12 @@ public interface GroupCodeMappingManager {
      * @date
      */
     GroupCodeMappingDO findByCodeAndGroupId(String shortLinkCode, Long groupId, Long accountNo);
+    /**
+     * @description TODO
+     * 更新
+     * @return
+     * @author
+     * @date
+     */
+    int update(GroupCodeMappingDO groupCodeMappingDO);
 }

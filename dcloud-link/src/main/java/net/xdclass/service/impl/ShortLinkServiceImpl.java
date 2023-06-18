@@ -190,6 +190,32 @@ public class ShortLinkServiceImpl implements ShortLinkService {
     }
 
     @Override
+    public boolean handerUpdateShortLink(EventMessage eventMessage) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        String eventMessageType = eventMessage.getEventMessageType();
+        ShortLinkUpdateRequest shortLinkUpdateRequest = JsonUtil.json2Obj(eventMessage.getContent(), ShortLinkUpdateRequest.class);
+        //校验短链域名;
+        DomainDO domainDO = checkDomain(shortLinkUpdateRequest.getDomainType(), shortLinkUpdateRequest.getDomainId(), accountNo);
+        if (EventMessageType.SHORT_LINK_UPDATE.name().equalsIgnoreCase(eventMessageType)){
+            //todo:(更新域名，短链码和title)参数过多可以封装一个对象;
+            ShortLinkDO shortLinkDO = ShortLinkDO.builder().code(shortLinkUpdateRequest.getCode())
+                    .title(shortLinkUpdateRequest.getTitle())
+                    .domain(domainDO.getValue()).build();
+            int rows=shortLinkManager.update(shortLinkDO);
+            log.info("更新C端短链",rows);
+        }else if (EventMessageType.SHORT_LINK_UPDATE_MAPPING.name().equalsIgnoreCase(eventMessageType)){
+            //todo:
+            GroupCodeMappingDO groupCodeMappingDO = GroupCodeMappingDO.builder().id(shortLinkUpdateRequest.getMappingId())
+                    .accountNo(accountNo)
+                    .title(shortLinkUpdateRequest.getTitle())
+                    .domain(domainDO.getValue()).build();
+            int rows= groupCodeMappingManager.update(groupCodeMappingDO);
+            log.info("更新B端短链",rows);
+        }
+        return false;
+    }
+
+    @Override
     public Map<String, Object> pageShortLinkByGroupId(ShortLinkPageRequest request) {
         long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
         Map<String, Object> pageResult = groupCodeMappingManager.pageShortLinkByGroupId(request.getPage(), request.getSize(), accountNo, request.getGroupId());
