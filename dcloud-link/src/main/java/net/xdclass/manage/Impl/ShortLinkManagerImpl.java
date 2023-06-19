@@ -48,7 +48,7 @@ public class ShortLinkManagerImpl implements ShortLinkManager {
                 //如果短链没有被删除,才进行更新;
         .eq("del",0)
         //更新的内容;
-        .set("titile",shortLinkDO.getTitle())
+        .set("title",shortLinkDO.getTitle())
         .set("domain",shortLinkDO.getDomain())
         );
         return rows;

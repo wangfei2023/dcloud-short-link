@@ -99,11 +99,12 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
 
     @Override
     public int update(GroupCodeMappingDO groupCodeMappingDO) {
+        log.info("更新groupCodeMappingDO={}",groupCodeMappingDO);
        int rows= groupCodeMappingMapper.update(null,new UpdateWrapper<GroupCodeMappingDO>()
         .eq("id",groupCodeMappingDO.getId())
-        .eq("account",groupCodeMappingDO.getAccountNo())
+        .eq("account_no",groupCodeMappingDO.getAccountNo())
         .eq("group_id",groupCodeMappingDO.getGroupId())
-        .set("titlt",groupCodeMappingDO.getTitle())
+        .set("title",groupCodeMappingDO.getTitle())
         .set("domain",groupCodeMappingDO.getDomain())
         );
         return rows;

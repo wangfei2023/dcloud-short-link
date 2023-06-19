@@ -191,7 +191,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
 
     @Override
     public boolean handerUpdateShortLink(EventMessage eventMessage) {
-        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        Long accountNo = eventMessage.getAccountNo();
         String eventMessageType = eventMessage.getEventMessageType();
         ShortLinkUpdateRequest shortLinkUpdateRequest = JsonUtil.json2Obj(eventMessage.getContent(), ShortLinkUpdateRequest.class);
         //校验短链域名;
@@ -207,6 +207,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
             //todo:
             GroupCodeMappingDO groupCodeMappingDO = GroupCodeMappingDO.builder().id(shortLinkUpdateRequest.getMappingId())
                     .accountNo(accountNo)
+                    .groupId(shortLinkUpdateRequest.getGroupId())
                     .title(shortLinkUpdateRequest.getTitle())
                     .domain(domainDO.getValue()).build();
             int rows= groupCodeMappingManager.update(groupCodeMappingDO);
@@ -238,13 +239,13 @@ public class ShortLinkServiceImpl implements ShortLinkService {
     @Override
     public JsonData update(ShortLinkUpdateRequest request) {
         long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
-        EventMessage.EventMessageBuilder eventMessage = EventMessage.builder()
+        EventMessage eventMessage = EventMessage.builder()
                 .accountNo(accountNo)
                 .messageId(IDUtil.geneSnowFlakeID().toString())
                 .content(JsonUtil.obj2Json(request))
-                .eventMessageType(EventMessageType.SHORT_LINK_UPDATE.name());
+                .eventMessageType(EventMessageType.SHORT_LINK_UPDATE.name()).build();
         //todo:
-        rabbitTemplate.convertAndSend(rabbitMQConfig.getShortLinkEventExchange(),rabbitMQConfig.getShortLinkUpdateRoutingKey(),eventMessage);
+        rabbitTemplate.convertAndSend(rabbitMQConfig.getShortLinkEventExchange(), rabbitMQConfig.getShortLinkUpdateRoutingKey(), eventMessage);
         return JsonData.buildSuccess();
     }
 
