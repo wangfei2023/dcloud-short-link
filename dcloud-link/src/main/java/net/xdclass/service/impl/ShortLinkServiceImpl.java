@@ -217,6 +217,26 @@ public class ShortLinkServiceImpl implements ShortLinkService {
     }
 
     @Override
+    public boolean handerDelShortLink(EventMessage eventMessage) {
+        //消费端处理逻辑;
+        Long accountNo = eventMessage.getAccountNo();
+        String eventMessageType = eventMessage.getEventMessageType();
+        ShortLinkDelRequest shortLinkDelRequest = JsonUtil.json2Obj(eventMessage.getContent(), ShortLinkDelRequest.class);
+        if (EventMessageType.SHORT_LINK_DEL.name().equalsIgnoreCase(eventMessageType)){
+            ShortLinkDO shortLinkDO = ShortLinkDO.builder().code(shortLinkDelRequest.getCode()).build();
+            int rows = shortLinkManager.del(shortLinkDO);
+            log.info("删除c端短链码={}",rows);
+        }else if (EventMessageType.SHORT_LINK_DEL_MAPPING.name().equalsIgnoreCase(eventMessageType)){
+            GroupCodeMappingDO groupCodeMappingDO = GroupCodeMappingDO.builder().id(Long.valueOf(shortLinkDelRequest.getMappingId()
+            )).accountNo(accountNo)
+                    .groupId(shortLinkDelRequest.getGroupId()).build();
+            int rows = groupCodeMappingManager.del(groupCodeMappingDO);
+            log.info("删除c端短链码={}",rows);
+        }
+        return false;
+    }
+
+    @Override
     public Map<String, Object> pageShortLinkByGroupId(ShortLinkPageRequest request) {
         long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
         Map<String, Object> pageResult = groupCodeMappingManager.pageShortLinkByGroupId(request.getPage(), request.getSize(), accountNo, request.getGroupId());

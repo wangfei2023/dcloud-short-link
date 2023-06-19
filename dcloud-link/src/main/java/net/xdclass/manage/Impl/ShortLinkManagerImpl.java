@@ -33,12 +33,9 @@ public class ShortLinkManagerImpl implements ShortLinkManager {
     }
 
     @Override
-    public int del(String shortLinkCode, Long accountNo) {
-        //编译通过;
-        ShortLinkDO shortLinkDO = new ShortLinkDO();
-        //邏輯刪除
-        shortLinkDO.setDel(1);
-        return shortLinkMapper.update(shortLinkDO,new QueryWrapper<ShortLinkDO>().eq("code",shortLinkCode).eq("account_no",accountNo));
+    public int del(ShortLinkDO shortLinkDO) {
+
+        return shortLinkMapper.update(null,new QueryWrapper<ShortLinkDO>().eq("code",shortLinkDO.getCode()));
     }
 
     @Override

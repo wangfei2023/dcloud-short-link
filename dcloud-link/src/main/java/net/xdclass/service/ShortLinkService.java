@@ -90,4 +90,14 @@ public interface ShortLinkService {
      */
 
     boolean handerUpdateShortLink(EventMessage eventMessage);
+
+    /**
+     * @description 处理删除短链消息
+     *
+     * @return
+     * @author
+     * @date
+     */
+
+    boolean handerDelShortLink(EventMessage eventMessage);
 }

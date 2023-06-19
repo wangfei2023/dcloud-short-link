@@ -2,6 +2,7 @@ package net.xdclass.manage;
 
 import net.xdclass.enums.ShortLinkStateEnum;
 import net.xdclass.model.GroupCodeMappingDO;
+import net.xdclass.model.ShortLinkDO;
 
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public interface GroupCodeMappingManager {
 
 
      */
-    int del(String shortLinkCode ,Long accountNo,Long groupId);
+    int del(GroupCodeMappingDO groupCodeMappingDO);
 
     /**
 

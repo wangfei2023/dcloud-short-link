@@ -28,7 +28,7 @@ ShortLinkDO findByShortLinkCode(String shortLinkCode);
  * @param accountNo
  * @return
  */
-int del(String shortLinkCode, Long accountNo);
+int del(ShortLinkDO shortLinkDO);
     /**
      * 更新
      *
