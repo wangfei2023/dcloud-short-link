@@ -48,12 +48,12 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
     }
 
     @Override
-    public int del(String shortLinkCode, Long accountNo, Long groupId) {
+    public int del(GroupCodeMappingDO groupCodeMappingDO) {
         int rows = groupCodeMappingMapper.update(null, new UpdateWrapper<GroupCodeMappingDO>()
-                .eq("code", shortLinkCode)
-                .eq("account_no", accountNo)
-                .eq("group_id", groupId).set("del",1)
-        );
+                .eq("id", groupCodeMappingDO.getId())
+                .eq("account_no", groupCodeMappingDO.getAccountNo())
+                .eq("group_id", groupCodeMappingDO.getGroupId())
+                .eq("del",1));
         return rows;
     }
 
@@ -63,6 +63,8 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
         Page<GroupCodeMappingDO> groupPage = groupCodeMappingMapper.selectPage(groupPageCodeMappingDO, new QueryWrapper<GroupCodeMappingDO>()
                 .eq("account_no", accountNo)
                 .eq("group_id", groupId)
+                //删除的数据不返回;
+                .eq("del",0)
         );
         HashMap<String, Object> map = new HashMap<>(3);
         map.put("total_page",groupPageCodeMappingDO.getPages());
@@ -78,6 +80,7 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
                 .eq("code", shortLinkCode)
                 .eq("account_no", accountNo)
                 .eq("group_id", groupId)
+                .eq("del",0).set("state",shortLinkStateEnum.name())
         );
         return rows;
     }
@@ -91,6 +94,19 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
 
         );
         return groupCodeMappingDO;
+    }
+
+    @Override
+    public int update(GroupCodeMappingDO groupCodeMappingDO) {
+        log.info("更新groupCodeMappingDO={}",groupCodeMappingDO);
+       int rows= groupCodeMappingMapper.update(null,new UpdateWrapper<GroupCodeMappingDO>()
+        .eq("id",groupCodeMappingDO.getId())
+        .eq("account_no",groupCodeMappingDO.getAccountNo())
+        .eq("group_id",groupCodeMappingDO.getGroupId())
+        .set("title",groupCodeMappingDO.getTitle())
+        .set("domain",groupCodeMappingDO.getDomain())
+        );
+        return rows;
     }
 
     private GroupCodeMappingVO beanProcess(GroupCodeMappingDO groupPageCodeMappingDO){

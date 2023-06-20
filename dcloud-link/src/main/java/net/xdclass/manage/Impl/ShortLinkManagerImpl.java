@@ -1,6 +1,7 @@
 package net.xdclass.manage.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import net.xdclass.manage.ShortLinkManager;
 import net.xdclass.mapper.ShortLinkMapper;
 import net.xdclass.model.ShortLinkDO;
@@ -32,11 +33,21 @@ public class ShortLinkManagerImpl implements ShortLinkManager {
     }
 
     @Override
-    public int del(String shortLinkCode, Long accountNo) {
-        //编译通过;
-        ShortLinkDO shortLinkDO = new ShortLinkDO();
-        //邏輯刪除
-        shortLinkDO.setDel(1);
-        return shortLinkMapper.update(shortLinkDO,new QueryWrapper<ShortLinkDO>().eq("code",shortLinkCode).eq("account_no",accountNo));
+    public int del(ShortLinkDO shortLinkDO) {
+
+        return shortLinkMapper.update(null,new QueryWrapper<ShortLinkDO>().eq("code",shortLinkDO.getCode()));
+    }
+
+    @Override
+    public int update(ShortLinkDO shortLinkDO) {
+       int rows= shortLinkMapper.update(null,new UpdateWrapper<ShortLinkDO>()
+        .eq("code",shortLinkDO.getCode())
+                //如果短链没有被删除,才进行更新;
+        .eq("del",0)
+        //更新的内容;
+        .set("title",shortLinkDO.getTitle())
+        .set("domain",shortLinkDO.getDomain())
+        );
+        return rows;
     }
 }
