@@ -58,8 +58,10 @@
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
+            <version>3.7.0</version>
         </dependency>
-<!--        redis使用连接池-->
+
+        <!--        redis使用连接池-->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
@@ -183,14 +185,26 @@
         </dependency>
 
         <!-- 解决 Lombok @Slf4j 中 log.info 无效的问题 -->
+<!--        <dependency>-->
+<!--            <groupId>org.slf4j</groupId>-->
+<!--            <artifactId>slf4j-log4j12</artifactId>-->
+<!--            &lt;!&ndash; 无需指定版本是因为指定了 spring-boot-dependencies 的版本，而该版本指定了 slf4j 的版本 &ndash;&gt;-->
+<!--            &lt;!&ndash;<version>1.7.30</version>&ndash;&gt;-->
+<!--        </dependency>-->
+<!--        &lt;!&ndash; 代码自动生成依赖 begin &ndash;&gt;可以自定义生成Java类模板;-->
+        <!-- SLF4J 的 API -->
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <!-- 无需指定版本是因为指定了 spring-boot-dependencies 的版本，而该版本指定了 slf4j 的版本 -->
-            <!--<version>1.7.30</version>-->
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.32</version>
         </dependency>
-<!--        &lt;!&ndash; 代码自动生成依赖 begin &ndash;&gt;可以自定义生成Java类模板;-->
 
+        <!-- SLF4J 的实现库 logback-classic -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.6</version>
+        </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-generator</artifactId>

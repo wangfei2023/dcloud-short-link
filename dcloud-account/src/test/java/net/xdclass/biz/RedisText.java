@@ -1,7 +1,7 @@
 package net.xdclass.biz;
 
 import net.xdclass.AccountApplication;
-import net.xdclass.utils.TimeUtil;
+import net.xdclass.config.JedisConfig;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -17,8 +17,6 @@ import redis.clients.jedis.JedisPool;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = AccountApplication.class)
@@ -41,13 +39,26 @@ public class RedisText {
         fileOutputStream.close();
     }
     //使用jedisconfig连接redis=-
-    @Test
+@Test
     public void jedisConnect()  {
         Jedis jedis = jedisPool.getResource();
-        jedis.hset("link","nice", TimeUtil.format(new Date()));
-        jedis.get("link");
-        List<Jedis> jedisList = List.of(jedis);
-        System.out.println(jedisList);
+    System.out.println(jedis.get("1"));
+    jedis.close();
+//        System.out.println(".......");
+//        jedis.get("link");
+//        List<Jedis> jedisList = List.of(jedis);
+//        System.out.println(jedisList);
+      //  jedis.hset("myhash", "field1", "value1");
+
+        // 关闭与 Redis 的连接
+
+    }
+    @Test
+    public void jedisWrite()  {
+        RedisUtils.get("1");
+
+        // 关闭与 Redis 的连接
+       // jedis.close();
 
     }
 }
