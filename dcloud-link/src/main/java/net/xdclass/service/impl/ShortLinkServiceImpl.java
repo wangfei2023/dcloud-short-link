@@ -246,11 +246,11 @@ public class ShortLinkServiceImpl implements ShortLinkService {
     @Override
     public JsonData del(ShortLinkDelRequest request) {
         long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
-        EventMessage.EventMessageBuilder eventMessage = EventMessage.builder()
+        EventMessage eventMessage = EventMessage.builder()
                 .accountNo(accountNo)
                 .messageId(IDUtil.geneSnowFlakeID().toString())
                 .content(JsonUtil.obj2Json(request))
-                .eventMessageType(EventMessageType.SHORT_LINK_DEL.name());
+                .eventMessageType(EventMessageType.SHORT_LINK_DEL.name()).build();
         //todo:
         rabbitTemplate.convertAndSend(rabbitMQConfig.getShortLinkEventExchange(),rabbitMQConfig.getShortLinkDelRoutingKey(),eventMessage);
         return JsonData.buildSuccess();
