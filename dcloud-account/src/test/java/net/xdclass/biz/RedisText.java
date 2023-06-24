@@ -1,6 +1,7 @@
 package net.xdclass.biz;
 
 import net.xdclass.AccountApplication;
+import net.xdclass.config.JedisConfig;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -16,11 +17,6 @@ import redis.clients.jedis.JedisPool;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = AccountApplication.class)
@@ -42,12 +38,27 @@ public class RedisText {
         workbook.write(fileOutputStream);
         fileOutputStream.close();
     }
-    //使用jedisconfig连接redis
-    @Test
+    //使用jedisconfig连接redis=-
+@Test
     public void jedisConnect()  {
-//        Jedis jedis = jedisPool.getResource();
+        Jedis jedis = jedisPool.getResource();
+    System.out.println(jedis.get("1"));
+    jedis.close();
+//        System.out.println(".......");
 //        jedis.get("link");
-//        ArrayList<Integer> arrayList = new ArrayList<Integer>(List.of("1", "2", "3"));
+//        List<Jedis> jedisList = List.of(jedis);
+//        System.out.println(jedisList);
+      //  jedis.hset("myhash", "field1", "value1");
+
+        // 关闭与 Redis 的连接
+
+    }
+    @Test
+    public void jedisWrite()  {
+        RedisUtils.get("1");
+
+        // 关闭与 Redis 的连接
+       // jedis.close();
 
     }
 }

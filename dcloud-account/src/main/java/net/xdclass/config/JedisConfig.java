@@ -3,6 +3,7 @@ package net.xdclass.config;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.*;
 
@@ -20,7 +21,7 @@ import redis.clients.jedis.*;
     @Value("${spring.redis.password}")
     private String password;
  */
-@Component
+@Configuration
 public class JedisConfig {
    @Bean
     public JedisPoolConfig jedisPoolConfig(
@@ -50,4 +51,5 @@ public class JedisConfig {
       }
       return new JedisPool(jedisPoolConfig,host,port,timeOut);
   }
+
 }
