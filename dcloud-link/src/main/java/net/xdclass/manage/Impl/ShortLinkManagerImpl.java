@@ -37,6 +37,7 @@ public class ShortLinkManagerImpl implements ShortLinkManager {
 
         return shortLinkMapper.update(null,new UpdateWrapper<ShortLinkDO>()
                 .eq("code",shortLinkDO.getCode())
+                .eq("account_no",shortLinkDO.getAccountNo())
                 .set("del",1)
         );
     }
@@ -47,6 +48,7 @@ public class ShortLinkManagerImpl implements ShortLinkManager {
         .eq("code",shortLinkDO.getCode())
                 //如果短链没有被删除,才进行更新;
         .eq("del",0)
+        .eq("account_no",shortLinkDO.getAccountNo())
         //更新的内容;
         .set("title",shortLinkDO.getTitle())
         .set("domain",shortLinkDO.getDomain())

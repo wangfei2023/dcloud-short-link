@@ -198,7 +198,8 @@ public class ShortLinkServiceImpl implements ShortLinkService {
         DomainDO domainDO = checkDomain(shortLinkUpdateRequest.getDomainType(), shortLinkUpdateRequest.getDomainId(), accountNo);
         if (EventMessageType.SHORT_LINK_UPDATE.name().equalsIgnoreCase(eventMessageType)){
             //todo:(更新域名，短链码和title)参数过多可以封装一个对象;
-            ShortLinkDO shortLinkDO = ShortLinkDO.builder().code(shortLinkUpdateRequest.getCode())
+            //.accountNo(accountNo)防止越权;
+            ShortLinkDO shortLinkDO = ShortLinkDO.builder().accountNo(accountNo).code(shortLinkUpdateRequest.getCode())
                     .title(shortLinkUpdateRequest.getTitle())
                     .domain(domainDO.getValue()).build();
             int rows=shortLinkManager.update(shortLinkDO);
@@ -223,7 +224,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
         String eventMessageType = eventMessage.getEventMessageType();
         ShortLinkDelRequest shortLinkDelRequest = JsonUtil.json2Obj(eventMessage.getContent(), ShortLinkDelRequest.class);
         if (EventMessageType.SHORT_LINK_DEL.name().equalsIgnoreCase(eventMessageType)){
-            ShortLinkDO shortLinkDO = ShortLinkDO.builder().code(shortLinkDelRequest.getCode()).build();
+            ShortLinkDO shortLinkDO = ShortLinkDO.builder().accountNo(accountNo).code(shortLinkDelRequest.getCode()).build();
             int rows = shortLinkManager.del(shortLinkDO);
             log.info("删除c端短链码={}",rows);
         }else if (EventMessageType.SHORT_LINK_DEL_MAPPING.name().equalsIgnoreCase(eventMessageType)){
