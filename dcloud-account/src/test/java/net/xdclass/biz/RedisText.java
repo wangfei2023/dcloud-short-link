@@ -41,9 +41,10 @@ public class RedisText {
     //使用jedisconfig连接redis=-
 @Test
     public void jedisConnect()  {
-        Jedis jedis = jedisPool.getResource();
-    System.out.println(jedis.get("1"));
-    jedis.close();
+//        Jedis jedis = jedisPool.getResource();
+//    System.out.println(jedis.get("1"));
+//    jedis.close();
+    new RedisUtils().get("1");
 //        System.out.println(".......");
 //        jedis.get("link");
 //        List<Jedis> jedisList = List.of(jedis);
@@ -55,7 +56,7 @@ public class RedisText {
     }
     @Test
     public void jedisWrite()  {
-        RedisUtils.get("1");
+      //  RedisUtils.get("1");
 
         // 关闭与 Redis 的连接
        // jedis.close();

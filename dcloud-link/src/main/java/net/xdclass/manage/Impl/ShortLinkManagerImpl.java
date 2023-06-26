@@ -35,7 +35,10 @@ public class ShortLinkManagerImpl implements ShortLinkManager {
     @Override
     public int del(ShortLinkDO shortLinkDO) {
 
-        return shortLinkMapper.update(null,new QueryWrapper<ShortLinkDO>().eq("code",shortLinkDO.getCode()));
+        return shortLinkMapper.update(null,new UpdateWrapper<ShortLinkDO>()
+                .eq("code",shortLinkDO.getCode())
+                .set("del",1)
+        );
     }
 
     @Override

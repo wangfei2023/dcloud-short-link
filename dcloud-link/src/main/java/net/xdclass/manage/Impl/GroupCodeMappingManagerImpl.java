@@ -53,7 +53,7 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
                 .eq("id", groupCodeMappingDO.getId())
                 .eq("account_no", groupCodeMappingDO.getAccountNo())
                 .eq("group_id", groupCodeMappingDO.getGroupId())
-                .eq("del",1));
+                .set("del",1));
         return rows;
     }
 
