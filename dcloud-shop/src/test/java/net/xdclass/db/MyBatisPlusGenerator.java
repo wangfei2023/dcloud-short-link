@@ -58,7 +58,7 @@ public class MyBatisPlusGenerator {
                 //TODO  TODO  TODO  TODO
                 .setUrl("jdbc:mysql://124.222.215.26:3306/dcloud_shop?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai")
                 .setUsername("root")
-                .setPassword("123456");
+                .setPassword("xdclass.net");
 
         //3. 策略配置globalConfiguration中
         StrategyConfig stConfig = new StrategyConfig();
@@ -76,7 +76,7 @@ public class MyBatisPlusGenerator {
 
                 // 生成的表, 支持多表一起生成，以数组形式填写
                 //TODO  TODO  TODO  TODO
-                .setInclude("product");
+                .setInclude("product_order");
 
         //4. 包名策略配置
         PackageConfig pkConfig = new PackageConfig();
