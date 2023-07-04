@@ -1,6 +1,6 @@
 /**
  * @project dcloud-short-link
- * @description
+ * @description商品列表和详情;
  * @author Administrator
  * @date 2023/6/27 0027 19:50:52
  * @version 1.0
