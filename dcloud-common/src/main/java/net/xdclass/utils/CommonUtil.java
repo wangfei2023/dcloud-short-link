@@ -179,6 +179,26 @@ public class CommonUtil {
             log.warn("响应json数据给前端异常:{}",e);
         }
     }
+
+    /**
+     * 响应html数据给前端
+     *
+     * @param response
+     * @param obj
+     */
+    public static void sendJHtmlMessage(HttpServletResponse response, JsonData  jsonData) {
+
+        response.setContentType("html/text; charset=utf-8");
+
+        try (PrintWriter writer = response.getWriter()) {
+            writer.write(jsonData.toString());
+            writer.flush();
+            writer.close();
+
+        } catch (IOException e) {
+            log.warn("响应json数据给前端异常:{}",e);
+        }
+    }
     /**
      * murmur hash算法
      * @param param
