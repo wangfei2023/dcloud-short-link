@@ -77,7 +77,9 @@ public class ProductOrderController {
 
 
     @PostMapping("page")
-    @RepeatSubmit(limitType =RepeatSubmit.Type.TOKEN )
+//    @RepeatSubmit(limitType =RepeatSubmit.Type.TOKEN )
+//    2.参数式
+    @RepeatSubmit(limitType =RepeatSubmit.Type.PARAM )
     public JsonData pageResult(@RequestBody ProductOrderPageRequest productOrderPageRequest){
         Map<String,Object> pageResult= productOrderService.page(productOrderPageRequest);
         return JsonData.buildSuccess(pageResult);

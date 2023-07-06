@@ -94,7 +94,7 @@ public class pointcutRepeatSubmitAspect {
             //目标类、方法
             String className = method.getDeclaringClass().getName();
             String name = method.getName();
-            String key = String.format("%s#%s#%s#%s",accountNo,ip, className, name);
+            String key = "order_server:repeat_submit:"+CommonUtil.MD5(String.format("%s#%s#%s#%s",accountNo,ip, className, name));
 
             log.info("key={}", key);
 
@@ -123,12 +123,9 @@ public class pointcutRepeatSubmitAspect {
             res = stringRedisTemplate.delete(key);
             if (!res){
                 log.error("订单重复提交");
+                throw new BizException(BizCodeEnum.ORDER_CONFIRM_REPEAT);
             }
 
-        }
-
-        if (!res) {
-            throw new BizException(BizCodeEnum.ORDER_CONFIRM_REPEAT);
         }
 
         System.out.println("目标方法执行前");
