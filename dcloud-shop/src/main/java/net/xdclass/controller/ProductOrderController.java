@@ -2,21 +2,26 @@ package net.xdclass.controller;
 
 
 import lombok.extern.slf4j.Slf4j;
+import net.xdclass.constant.RedisKey;
 import net.xdclass.controller.request.ConfirmOrderRequest;
 import net.xdclass.enums.BizCodeEnum;
 import net.xdclass.enums.ClientTypeEnum;
 import net.xdclass.enums.ProductOrderPayTypeEnum;
+import net.xdclass.interceptor.LoginInterceptor;
 import net.xdclass.service.ProductOrderService;
 import net.xdclass.service.ProductService;
 import net.xdclass.utils.CommonUtil;
 import net.xdclass.utils.JsonData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -32,6 +37,24 @@ import java.util.Map;
 public class ProductOrderController {
     @Autowired
     private ProductOrderService productOrderService;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+   /**
+    * @description TODO
+    * 获取token;
+    * @return
+    * @author
+    * @date
+    */
+    @GetMapping("token")
+    public JsonData getToken(){
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        String token = CommonUtil.getStringNumRandom(32);
+        String key = String.format(RedisKey.SUBMIT_ORDER_TOKEN_KEY, accountNo, token);
+        redisTemplate.opsForValue().set(key,String.valueOf(Thread.currentThread().getId()),30, TimeUnit.MINUTES);
+         return JsonData.buildSuccess(token);
+    }
     /**
      * @description TODO 
      * 分业接口;       

@@ -1,0 +1,112 @@
+/**
+ * @project dcloud-short-link
+ * @description 定义切面防重提交
+ * @author Administrator
+ * @date 2023/7/5 0005 22:16:03
+ * @version 1.0
+ */
+
+package net.xdclass.aspect;
+
+import com.alibaba.cloud.commons.lang.StringUtils;
+import lombok.extern.slf4j.Slf4j;
+import net.xdclass.annoatation.RepeatSubmit;
+import net.xdclass.constant.RedisKey;
+import net.xdclass.enums.BizCodeEnum;
+import net.xdclass.exception.BizException;
+import net.xdclass.interceptor.LoginInterceptor;
+import net.xdclass.model.LoginUser;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+
+@Aspect
+@Component
+@Slf4j
+public class pointcutRepeatSubmit {
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    /**
+     * 定义 @Pointcut注解表达式，
+     *  方式一：@annotation：当执行的方法上拥有指定的注解时生效（我们采用这）
+     *  方式二：execution：一般用于指定方法的执行
+     *
+     * @param repeatSubmit
+     */
+    @Pointcut("@annotation(repeatSubmit)")
+    public void pointcutNoRepeatSubmit(RepeatSubmit repeatSubmit) {
+
+    }
+
+    /**
+     * 环绕通知, 围绕着方法执行
+     * @Around 可以用来在调用一个具体方法前和调用后来完成一些具体的任务。
+     *
+     * 方式一：单用 @Around("execution(* net.xdclass.controller.*.*(..))")可以
+     * 方式二：用@Pointcut和@Around联合注解也可以（我们采用这个）
+     *
+     *
+     * 两种方式
+     * 方式一：加锁 固定时间内不能重复提交
+     * <p>
+     * 方式二：先请求获取token，这边再删除token,删除成功则是第一次提交
+     *
+     * @param joinPoint
+     * @param noRepeatSubmit
+     * @return
+     * @throws Throwable
+     */
+    @Around("pointcutNoRepeatSubmit(noRepeatSubmit)")
+    public Object around(ProceedingJoinPoint joinPoint, RepeatSubmit noRepeatSubmit) throws Throwable {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
+        boolean res =false;
+        //防重提交类型
+        String type = noRepeatSubmit.limitType().name();
+
+        if (type.equals(RepeatSubmit.Type.PARAM.name())) {
+            //方式一方法参数            TODO
+
+
+        } else {
+            //方式二,令牌形式
+            String requestToken = request.getHeader("request-token");
+            if (StringUtils.isBlank(requestToken)) {
+                throw new BizException(BizCodeEnum.ORDER_CONFIRM_TOKEN_EQUAL_FAIL);
+
+            }
+            LoginUser loginUser = LoginInterceptor.threadLocal.get();
+            //"order:submit:%s:%s"
+            String key = String.format(RedisKey.SUBMIT_ORDER_TOKEN_KEY, loginUser.getAccountNo(), requestToken);
+
+
+            /**
+             * 提交表单的token key
+             * 方式一：不用lua脚本获取再判断，之前是因为 key组成是 order:submit:accountNo, value是对应的token，所以需要先获取值，再判断
+             * 方式二：可以直接key是 order:submit:accountNo:token,然后直接删除成功则完成
+             */
+            res = stringRedisTemplate.delete(key);
+
+        }
+
+        if (!res) {
+            throw new BizException(BizCodeEnum.ORDER_CONFIRM_REPEAT);
+        }
+
+        System.out.println("目标方法执行前");
+        Object object = joinPoint.proceed();
+        System.out.println("目标方法执行后");
+        return object;
+    }
+}
+
+
