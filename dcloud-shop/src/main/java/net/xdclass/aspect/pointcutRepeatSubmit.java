@@ -16,10 +16,12 @@ import net.xdclass.enums.BizCodeEnum;
 import net.xdclass.exception.BizException;
 import net.xdclass.interceptor.LoginInterceptor;
 import net.xdclass.model.LoginUser;
+import net.xdclass.utils.CommonUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -27,6 +29,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
 
 @Aspect
 @Component
@@ -68,15 +72,29 @@ public class pointcutRepeatSubmit {
     @Around("pointcutNoRepeatSubmit(noRepeatSubmit)")
     public Object around(ProceedingJoinPoint joinPoint, RepeatSubmit noRepeatSubmit) throws Throwable {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
         boolean res =false;
         //防重提交类型
         String type = noRepeatSubmit.limitType().name();
 
         if (type.equals(RepeatSubmit.Type.PARAM.name())) {
             //方式一方法参数            TODO
+            //方式一方法参数
+            long lockTime = noRepeatSubmit.lockTime();
 
+            String ip = CommonUtil.getIpAddr(request);
+            //获取注解
+            MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+            Method method = signature.getMethod();
+            //目标类、方法
+            String className = method.getDeclaringClass().getName();
+            String name = method.getName();
+            String key = String.format("%s#%s#%s#%s",accountNo,ip, className, name);
 
+            log.info("key={}", key);
+
+            //加锁;
+            stringRedisTemplate.opsForValue().setIfAbsent(key,"1",lockTime, TimeUnit.SECONDS);
         } else {
             //方式二,令牌形式
             String requestToken = request.getHeader("request-token");
