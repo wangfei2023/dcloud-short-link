@@ -2,8 +2,10 @@ package net.xdclass.controller;
 
 
 import lombok.extern.slf4j.Slf4j;
+import net.xdclass.annoatation.RepeatSubmit;
 import net.xdclass.constant.RedisKey;
 import net.xdclass.controller.request.ConfirmOrderRequest;
+import net.xdclass.controller.request.ProductOrderPageRequest;
 import net.xdclass.enums.BizCodeEnum;
 import net.xdclass.enums.ClientTypeEnum;
 import net.xdclass.enums.ProductOrderPayTypeEnum;
@@ -62,15 +64,24 @@ public class ProductOrderController {
      * @author 
      * @date  
      */
-   @GetMapping("page")
-    public JsonData pageResult(
-            @RequestParam(value = "page", defaultValue = "1")int page,
-            @RequestParam(value = "size", defaultValue = "10")int size,
-            @RequestParam(value = "status", required = false)String  status
-   ){
-       Map<String,Object> pageResult= productOrderService.page(page,size,status);
-       return JsonData.buildSuccess(pageResult);
-   }
+//   @GetMapping("page")
+//   @RepeatSubmit(limitType =RepeatSubmit.Type.TOKEN )
+//    public JsonData pageResult(
+//            @RequestParam(value = "page", defaultValue = "1")int page,
+//            @RequestParam(value = "size", defaultValue = "10")int size,
+//            @RequestParam(value = "status", required = false)String  status
+//   ){
+//       Map<String,Object> pageResult= productOrderService.page(page,size,status);
+//       return JsonData.buildSuccess(pageResult);
+//   }
+
+
+    @PostMapping("page")
+    @RepeatSubmit(limitType =RepeatSubmit.Type.TOKEN )
+    public JsonData pageResult(@RequestBody ProductOrderPageRequest productOrderPageRequest){
+        Map<String,Object> pageResult= productOrderService.page(productOrderPageRequest);
+        return JsonData.buildSuccess(pageResult);
+    }
    
    /**
     * @description TODO 

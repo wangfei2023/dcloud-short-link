@@ -1,6 +1,7 @@
 package net.xdclass.service;
 
 import net.xdclass.controller.request.ConfirmOrderRequest;
+import net.xdclass.controller.request.ProductOrderPageRequest;
 import net.xdclass.model.ProductOrderDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import net.xdclass.utils.JsonData;
@@ -23,7 +24,7 @@ public interface ProductOrderService {
     * @author
     * @date
     */
-    Map<String, Object> page(int page, int size, String status);
+    Map<String, Object> page(ProductOrderPageRequest productOrderPageRequest);
     /**
      * @description TODO
      * 查询订单状态;
