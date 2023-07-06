@@ -22,6 +22,9 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.redisson.client.RedisClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -35,10 +38,12 @@ import java.util.concurrent.TimeUnit;
 @Aspect
 @Component
 @Slf4j
-public class pointcutRepeatSubmit {
+public class pointcutRepeatSubmitAspect {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
+    @Autowired
+    private RedissonClient  redissonClient;
     /**
      * 定义 @Pointcut注解表达式，
      *  方式一：@annotation：当执行的方法上拥有指定的注解时生效（我们采用这）
@@ -93,8 +98,11 @@ public class pointcutRepeatSubmit {
 
             log.info("key={}", key);
 
-            //加锁;
-            stringRedisTemplate.opsForValue().setIfAbsent(key,"1",lockTime, TimeUnit.SECONDS);
+            //第一种加锁方式加锁;
+            //stringRedisTemplate.opsForValue().setIfAbsent(key,"1",lockTime, TimeUnit.SECONDS);
+            RLock lock = redissonClient.getLock(key);
+            // 尝试加锁，最多等待0秒，上锁以后5秒自动解锁 [lockTime默认为5s, 可以自定义]
+            res=lock.tryLock(0,lockTime,TimeUnit.SECONDS);
         } else {
             //方式二,令牌形式
             String requestToken = request.getHeader("request-token");
@@ -113,6 +121,9 @@ public class pointcutRepeatSubmit {
              * 方式二：可以直接key是 order:submit:accountNo:token,然后直接删除成功则完成
              */
             res = stringRedisTemplate.delete(key);
+            if (!res){
+                log.error("订单重复提交");
+            }
 
         }
 
