@@ -2,6 +2,7 @@ package net.xdclass.service;
 
 import net.xdclass.controller.request.ConfirmOrderRequest;
 import net.xdclass.controller.request.ProductOrderPageRequest;
+import net.xdclass.model.EventMessage;
 import net.xdclass.model.ProductOrderDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import net.xdclass.utils.JsonData;
@@ -35,4 +36,12 @@ public interface ProductOrderService {
     String queryProductOrder(String outTradeNo);
 
     JsonData confirm(ConfirmOrderRequest confirmOrderRequest);
+/**
+ * @description TODO 
+ * 关单服务;       
+ * @return 
+ * @author 
+ * @date  
+ */
+    boolean closeProductOrder(EventMessage eventMessage);
 }

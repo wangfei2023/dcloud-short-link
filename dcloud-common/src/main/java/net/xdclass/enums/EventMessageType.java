@@ -83,5 +83,15 @@ public enum EventMessageType {
   * @author
   * @date
   */
- SHORT_LINK_UPDATE_MAPPING;
+ SHORT_LINK_UPDATE_MAPPING,
+
+
+/**
+ * @description 新建商品订单
+ *
+ * @return
+ * @author
+ * @date
+ */
+ PRODUCT_ORDER_NEW;
 }

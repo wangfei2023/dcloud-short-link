@@ -104,7 +104,7 @@ public class ProductOrderController {
    * @author
    * @date
    */
-    @GetMapping("confirm")
+    @PostMapping("/confirm")
     public void OrderConfirm(@RequestBody ConfirmOrderRequest confirmOrderRequest, HttpServletResponse httpServletResponse) {
       //微信支付和支付宝支付的区别：
 //        微信支付会保留在原页面,返回json格式;而支付宝支付会跳转页面,返回的是html格式;
@@ -125,7 +125,7 @@ public class ProductOrderController {
                 }
 
 
-            } else if (payType.equalsIgnoreCase(ProductOrderPayTypeEnum.WECHAT_APY.name())) {
+            } else if (payType.equalsIgnoreCase(ProductOrderPayTypeEnum.WECHAT_PAY.name())) {
                 //微信支付;
                 CommonUtil.sendJsonMessage(httpServletResponse, jsonData);
             } else {
