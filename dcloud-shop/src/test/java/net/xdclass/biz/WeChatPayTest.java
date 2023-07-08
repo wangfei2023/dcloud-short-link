@@ -18,6 +18,7 @@ import net.xdclass.manager.ProductOrderManager;
 import net.xdclass.model.ProductOrderDO;
 import net.xdclass.utils.CommonUtil;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -95,6 +96,64 @@ public class WeChatPayTest {
             //响应体
             int statusCode = response.getStatusLine().getStatusCode();
             log.info("统一下单响应码={}，响应体={}", statusCode, responseStr);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+/**
+ * @description TODO 
+ *  根据商户订单号查询订单支付状态;
+ * @return 
+ * @author 
+ * @date  
+ */
+    @Test
+    public void testWechatPayNativeQuery() throws IOException {
+
+        String outTradeNo = "4BV90hZRVFwLR8bqr4hQXRyNLAutX4PL";
+        String url = String.format(WechatPayApi.NATIVE_QUERY, outTradeNo, payConfig.getMchId());
+
+        HttpGet httpGet = new HttpGet(url);
+        httpGet.setHeader("Accept", "application/json");
+
+        //httpClient自动进行参数签名
+        try (CloseableHttpResponse response = wechatPayClient.execute(httpGet)) {
+            String responseStr = EntityUtils.toString(response.getEntity());
+            int statusCode = response.getStatusLine().getStatusCode();
+            log.info("查询订单响应码={}，响应体={}", statusCode, responseStr);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testWechatPayNativeCloseOrder() throws IOException {
+
+        String outTradeNo = "4BV90hZRVFwLR8bqr4hQXRyNLAutX4PL";
+        String url = String.format(WechatPayApi.NATIVE_CLOSE_ORDER, outTradeNo, payConfig.getMchId());
+
+        HttpPost httpPost = new HttpPost(url);
+
+        //组装json
+        JSONObject payObj = new JSONObject();
+
+        payObj.put("mchid", payConfig.getMchId());
+        String body = payObj.toJSONString();
+
+        log.info("请求参数={}", body);
+
+        //将请求参数设置到请求对象中
+        StringEntity entity = new StringEntity(body, "utf-8");
+        entity.setContentType("application/json");
+        httpPost.setEntity(entity);
+        httpPost.setHeader("Accept", "application/json");
+
+        //httpClient自动进行参数签名
+        try (CloseableHttpResponse response = wechatPayClient.execute(httpPost);) {
+            int statusCode = response.getStatusLine().getStatusCode();//响应状态码
+            log.info("关闭订单响应码={}，无响应体", statusCode);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
