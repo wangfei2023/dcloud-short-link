@@ -51,55 +51,72 @@ public class WeChatPayTest {
     public void testLoadPrivatKey() throws Exception{
         log.info(payBeanConfig.getPrivateKey().getAlgorithm());
     }
-    @Test
-    public void testWechatPayNativeOrder() throws IOException {
 
-        //过期时间  RFC 3339格式
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-        //支付订单过期时间
-        String timeExpire = sdf.format(new Date(System.currentTimeMillis() + 6000 * 60 * 1000));
+    /**
+     * 快速验证统一下单接口
+     * @throws IOException
+     */
+    @Test
+    public void testNativeOrder() throws IOException {
+
         String outTradeNo = CommonUtil.getStringNumRandom(32);
 
-        JSONObject amountObj = new JSONObject();
+        /**
+         * {
+         * 	"mchid": "1900006XXX",
+         * 	"out_trade_no": "native12177525012014070332333",
+         * 	"appid": "wxdace645e0bc2cXXX",
+         * 	"description": "Image形象店-深圳腾大-QQ公仔",
+         * 	"notify_url": "https://weixin.qq.com/",
+         * 	"amount": {
+         * 		"total": 1,
+         * 		"currency": "CNY"
+         *        }
+         * }
+         */
         JSONObject payObj = new JSONObject();
-        payObj.put("mchid", payConfig.getMchId());
-        payObj.put("out_trade_no", outTradeNo);
-        payObj.put("appid", payConfig.getWxPayAppid());
-        payObj.put("description", "爱上一只灰色的大灰狼");
-        payObj.put("notify_url", payConfig.getCallbackUrl());
-        payObj.put("time_expire", timeExpire);
+        payObj.put("mchid",payConfig.getMchId());
+        payObj.put("out_trade_no",outTradeNo);
+        payObj.put("appid",payConfig.getWxPayAppid());
+        payObj.put("description","老王和冰冰的红包");
+        payObj.put("notify_url",payConfig.getCallbackUrl());
 
-        //微信支付需要以分为单位
-        int amount = 100;
-        amountObj.put("total", amount);
-        amountObj.put("currency", "CNY");
-        payObj.put("amount", amountObj);
+        //订单总金额，单位为分。
+        JSONObject amountObj = new JSONObject();
+        amountObj.put("total",100);
+        amountObj.put("currency","CNY");
 
-        //附属参数，可以用在回调携带
-        payObj.put("attach", "{\"accountNo\":" + 8888 + "}");
+        payObj.put("amount",amountObj);
+        //附属参数，可以用在回调
+        payObj.put("attach","{\"accountNo\":"+888+"}");
 
-        // 处理请求body参数
+
         String body = payObj.toJSONString();
-        log.info("请求参数:{}", payObj);
-        StringEntity entity = new StringEntity(body, "utf-8");
+
+        log.info("请求参数:{}",body);
+
+        StringEntity entity = new StringEntity(body,"utf-8");
         entity.setContentType("application/json");
 
-        //调用统一下单API
         HttpPost httpPost = new HttpPost(WechatPayApi.NATIVE_ORDER);
-        httpPost.setHeader("Accept", "application/json");
+        httpPost.setHeader("Accept","application/json");
         httpPost.setEntity(entity);
 
-        //httpClient自动进行参数签名
-        try (CloseableHttpResponse response = wechatPayClient.execute(httpPost)) {
+        try(CloseableHttpResponse response = wechatPayClient.execute(httpPost)){
 
-            String responseStr = EntityUtils.toString(response.getEntity());
-            //响应体
+            //响应码
             int statusCode = response.getStatusLine().getStatusCode();
-            log.info("统一下单响应码={}，响应体={}", statusCode, responseStr);
-        } catch (Exception e) {
+            //响应体
+            String responseStr = EntityUtils.toString(response.getEntity());
+
+            log.info("下单响应码:{},响应体:{}",statusCode,responseStr);
+
+        }catch (Exception e){
             e.printStackTrace();
         }
+
     }
+
 /**
  * @description TODO 
  *  根据商户订单号查询订单支付状态;
@@ -157,6 +174,75 @@ public class WeChatPayTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+/**
+ * @description TODO 
+ *  申请订单退款
+ * @return 
+ * @author 
+ * @date  
+ */
+    /**
+     * {"amount":{"currency":"CNY","discount_refund":0,"from":[],"payer_refund":10,
+     * "payer_total":100,"refund":10,"settlement_refund":10,"settlement_total":100,"total":100},
+     * "channel":"ORIGINAL","create_time":"2022-01-18T13:14:46+08:00",
+     * "funds_account":"AVAILABLE","out_refund_no":"Pe9rWbRpUDu51PFvo8L17LJZHm6dpbj7",
+     * "out_trade_no":"6xYsHV3UziDINu06B0XeuzmNvOedjhY5","promotion_detail":[],
+     * "refund_id":"50302000542022011816569235991","status":"PROCESSING",
+     * "transaction_id":"4200001390202201189710793189",
+     * "user_received_account":"民生银行信用卡5022"}
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testNativeRefundOrder() throws IOException {
+
+        String outTradeNo = "iIYGHoBTO95YaZu68n7BWXsxyaaNxK6q";
+
+        String refundNo = CommonUtil.getStringNumRandom(32);
+//        //调用统一下单API
+//        String url = "https://api.mch.weixin.qq.com/v3/refund/domestic/refunds";
+      //  HttpPost httpPost = new HttpPost(url);
+
+        // 请求body参数
+        JSONObject refundObj = new JSONObject();
+        //订单号
+        refundObj.put("out_trade_no", outTradeNo);
+        //退款单编号，商户系统内部的退款单号，商户系统内部唯一，
+        // 只能是数字、大小写字母_-|*@ ，同一退款单号多次请求只退一笔
+        refundObj.put("out_refund_no", refundNo);
+        refundObj.put("reason","商品已售完");
+        refundObj.put("notify_url", payConfig.getCallbackUrl());
+
+        JSONObject amountObj = new JSONObject();
+        amountObj.put("refund", 10);
+        amountObj.put("total", 100);
+        amountObj.put("currency", "CNY");
+
+        refundObj.put("amount", amountObj);
+
+        String body = refundObj.toJSONString();
+        log.info("请求参数:{}",body);
+
+        StringEntity entity = new StringEntity(body,"utf-8");
+        entity.setContentType("application/json");
+        HttpPost httpPost=new HttpPost(WechatPayApi.NATIVE_REFUSE_ORDER);
+        httpPost.setHeader("Accept", "application/json");
+        httpPost.setEntity(entity);
+
+        try(CloseableHttpResponse response = wechatPayClient.execute(httpPost)){
+            //响应码
+            int statusCode = response.getStatusLine().getStatusCode();
+            //响应体
+            String responseStr = EntityUtils.toString(response.getEntity());
+
+            log.info("退款响应码:{},响应体:{}",statusCode,responseStr);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
     }
 }
 

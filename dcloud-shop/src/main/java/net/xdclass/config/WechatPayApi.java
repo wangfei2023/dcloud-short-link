@@ -32,6 +32,11 @@ public class WechatPayApi {
      */
     public static final String NATIVE_CLOSE_ORDER = HOST+"/v3/pay/transactions/out-trade-no/%s/close";
 
+    /**
+     * 申请退款接口;
+     */
+    public static final String NATIVE_REFUSE_ORDER = HOST+"/v3/refund/domestic/refunds";
+
 }
 
 
