@@ -23,7 +23,7 @@ public class WeChatPayConfig {
      * @author 
      * @date  
      */
-    private String mcId;
+    private String mchId;
     /**
      * @description TODO 
      *     #公众号id 需要和商户号绑定   
