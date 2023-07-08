@@ -147,7 +147,7 @@ public class WeChatPayTest {
     @Test
     public void testWechatPayNativeCloseOrder() throws IOException {
 
-        String outTradeNo = "4BV90hZRVFwLR8bqr4hQXRyNLAutX4PL";
+        String outTradeNo = "ckj99CYGsNwOFAbOzrFTtqB8TDp0O6Fr";
         String url = String.format(WechatPayApi.NATIVE_CLOSE_ORDER, outTradeNo, payConfig.getMchId());
 
         HttpPost httpPost = new HttpPost(url);
@@ -197,7 +197,7 @@ public class WeChatPayTest {
     @Test
     public void testNativeRefundOrder() throws IOException {
 
-        String outTradeNo = "iIYGHoBTO95YaZu68n7BWXsxyaaNxK6q";
+        String outTradeNo = "ckj99CYGsNwOFAbOzrFTtqB8TDp0O6Fr";
 
         String refundNo = CommonUtil.getStringNumRandom(32);
 //        //调用统一下单API
@@ -243,6 +243,48 @@ public class WeChatPayTest {
         }
 
 
+    }
+    /**
+     * {"amount":{"currency":"CNY","discount_refund":0,"from":[],"payer_refund":10,
+     * "payer_total":100,"refund":10,"settlement_refund":10,
+     * "settlement_total":100,"total":100},"channel":"ORIGINAL",
+     * "create_time":"2022-01-18T13:14:46+08:00","funds_account":"AVAILABLE",
+     * "out_refund_no":"Pe9rWbRpUDu51PFvo8L17LJZHm6dpbj7",
+     * "out_trade_no":"6xYsHV3UziDINu06B0XeuzmNvOedjhY5","promotion_detail":[],
+     * "refund_id":"50302000542022011816569235991","status":"SUCCESS",
+     * "success_time":"2022-01-18T13:14:55+08:00","transaction_id":"4200001390202201189710793189",
+     * "user_received_account":"民生银行信用卡5022"}
+     * @throws IOException
+     */
+    /**
+     * @description TODO 
+     *     -订单退款状态查询
+     * @return 
+     * @author 
+     * @date  
+     */
+    @Test
+    public void testNativeRefundQuery() throws IOException {
+
+
+        String refundNo = "ZhG8JkUtMIgRazU50JqgbYOLNG9Aheru";
+
+        String url = String.format(WechatPayApi.NATIVE_REFUSE_STATE_QUERY, refundNo);
+        HttpGet httpGet = new HttpGet(url);
+        httpGet.setHeader("Accept", "application/json");
+
+        try (CloseableHttpResponse response = wechatPayClient.execute(httpGet)) {
+
+            //响应码
+            int statusCode = response.getStatusLine().getStatusCode();
+            //响应体
+            String responseStr = EntityUtils.toString(response.getEntity());
+
+            log.info("查询退款响应码:{},响应体:{}", statusCode, responseStr);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
 
