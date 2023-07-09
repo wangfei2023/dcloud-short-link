@@ -37,12 +37,12 @@ public class PayFactory {
 
     public String closeOrder(PayInfoVO payInfoVO){
         String payType = payInfoVO.getPayType();
-        if (ProductOrderPayTypeEnum.ALI_PAY.equals(payType)){
+        if (ProductOrderPayTypeEnum.ALI_PAY.name().equals(payType)){
             PayStrategyContext payStrategyContext = new PayStrategyContext(alipayStrategy);
-            payStrategyContext.executeCloseOrder(payInfoVO);
-        }else if (ProductOrderPayTypeEnum.WECHAT_PAY.equals(payType)){
+            return  payStrategyContext.executeCloseOrder(payInfoVO);
+        }else if (ProductOrderPayTypeEnum.WECHAT_PAY.name().equals(payType)){
             PayStrategyContext payStrategyContext = new PayStrategyContext(wechatPayStrategy);
-            payStrategyContext.executeCloseOrder(payInfoVO);
+            return payStrategyContext.executeCloseOrder(payInfoVO);
         }
         return "";
     }
@@ -51,12 +51,12 @@ public class PayFactory {
 
     public String queryPayStatus(PayInfoVO payInfoVO){
         String payType = payInfoVO.getPayType();
-        if (ProductOrderPayTypeEnum.ALI_PAY.equals(payType)){
+        if (ProductOrderPayTypeEnum.ALI_PAY.name().equals(payType)){
             PayStrategyContext payStrategyContext = new PayStrategyContext(alipayStrategy);
-            payStrategyContext.executeQueryPayStatus(payInfoVO);
-        }else if (ProductOrderPayTypeEnum.WECHAT_PAY.equals(payType)){
+            return payStrategyContext.executeQueryPayStatus(payInfoVO);
+        }else if (ProductOrderPayTypeEnum.WECHAT_PAY.name().equals(payType)){
             PayStrategyContext payStrategyContext = new PayStrategyContext(wechatPayStrategy);
-            payStrategyContext.executeQueryPayStatus(payInfoVO);
+            return payStrategyContext.executeQueryPayStatus(payInfoVO);
         }
         return "";
     }
@@ -64,12 +64,12 @@ public class PayFactory {
 
     public String refund(PayInfoVO payInfoVO){
         String payType = payInfoVO.getPayType();
-        if (ProductOrderPayTypeEnum.ALI_PAY.equals(payType)){
+        if (ProductOrderPayTypeEnum.ALI_PAY.name().equals(payType)){
             PayStrategyContext payStrategyContext = new PayStrategyContext(alipayStrategy);
-            payStrategyContext.executeRefund(payInfoVO);
-        }else if (ProductOrderPayTypeEnum.WECHAT_PAY.equals(payType)){
+            return payStrategyContext.executeRefund(payInfoVO);
+        }else if (ProductOrderPayTypeEnum.WECHAT_PAY.name().equals(payType)){
             PayStrategyContext payStrategyContext = new PayStrategyContext(wechatPayStrategy);
-            payStrategyContext.executeRefund(payInfoVO);
+            return payStrategyContext.executeRefund(payInfoVO);
         }
         return "";
     }
