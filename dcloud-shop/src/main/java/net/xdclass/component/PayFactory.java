@@ -25,12 +25,12 @@ public class PayFactory {
 
     public String pay(PayInfoVO payInfoVO){
         String payType = payInfoVO.getPayType();
-        if (ProductOrderPayTypeEnum.ALI_PAY.equals(payType)){
+        if (ProductOrderPayTypeEnum.ALI_PAY.name().equals(payType)){
             PayStrategyContext payStrategyContext = new PayStrategyContext(alipayStrategy);
-            payStrategyContext.executeUnifiedOrder(payInfoVO);
-        }else if (ProductOrderPayTypeEnum.WECHAT_PAY.equals(payType)){
+            return payStrategyContext.executeUnifiedOrder(payInfoVO);
+        }else if (ProductOrderPayTypeEnum.WECHAT_PAY.name().equals(payType)){
             PayStrategyContext payStrategyContext = new PayStrategyContext(wechatPayStrategy);
-            payStrategyContext.executeUnifiedOrder(payInfoVO);
+           return payStrategyContext.executeUnifiedOrder(payInfoVO);
         }
         return "";
     }

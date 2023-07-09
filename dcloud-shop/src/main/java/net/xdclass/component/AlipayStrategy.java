@@ -9,7 +9,9 @@
 package net.xdclass.component;
 
 import net.xdclass.vo.PayInfoVO;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AlipayStrategy implements PayStrategy{
     @Override
     public String unifiedOrder(PayInfoVO payInfoVO) {

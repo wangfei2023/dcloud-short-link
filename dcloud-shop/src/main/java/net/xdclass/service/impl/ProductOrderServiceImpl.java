@@ -3,6 +3,7 @@ package net.xdclass.service.impl;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import net.xdclass.component.PayFactory;
 import net.xdclass.config.InterceptorConfig;
 import net.xdclass.config.RabbitMQConfig;
 import net.xdclass.constant.TimeConstant;
@@ -32,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.smartcardio.CommandAPDU;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -56,6 +58,9 @@ public class ProductOrderServiceImpl  implements ProductOrderService {
 
     @Autowired
     private RabbitMQConfig rabbitMQConfig;
+
+    @Autowired
+    private PayFactory payFactory;
     @Override
     public Map<String, Object> page(ProductOrderPageRequest request) {
         long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
@@ -127,8 +132,14 @@ public class ProductOrderServiceImpl  implements ProductOrderService {
 
         rabbitTemplate.convertAndSend(rabbitMQConfig.getOrderEventExchange(),rabbitMQConfig.getOrderCloseDelayRoutingKey(),eventMessage);
         //调用支付信息;TODO:
-
-        return JsonData.buildSuccess();
+        String orderUrl = payFactory.pay(payInfoVO);
+        if (StringUtils.isNotBlank(orderUrl)){
+            HashMap<Object, Object> hashMap = new HashMap<>(2);
+            hashMap.put("code_url",orderUrl);
+            hashMap.put("out_trade_no",payInfoVO.getOutTradeNo());
+            return JsonData.buildSuccess(hashMap);
+        }
+        return JsonData.buildResult(BizCodeEnum.PAY_ORDER_FAIL);
     }
     /**
      * //延迟消息的时间 需要比订单过期 时间长一点，这样就不存在查询的时候，用户还能支付成功
