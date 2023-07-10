@@ -27,6 +27,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.omg.PortableInterceptor.Interceptor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +38,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -62,6 +65,9 @@ public class ProductOrderServiceImpl  implements ProductOrderService {
 
     @Autowired
     private PayFactory payFactory;
+
+    @Autowired
+    private RedisTemplate<Object,Object> redisTemplate;
     @Override
     public Map<String, Object> page(ProductOrderPageRequest request) {
         long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
@@ -216,10 +222,13 @@ public class ProductOrderServiceImpl  implements ProductOrderService {
 //            消费;
             //tradeState 1.SUCCESS 2.fail......支付状态
             if ("SUCCESS".equalsIgnoreCase(tradeState)){
-               rabbitTemplate.convertAndSend(rabbitMQConfig.getOrderEventExchange(),
-                       rabbitMQConfig.getOrderUpdateTrafficRoutingKey(),
-                       eventMessage
-                       );
+                Boolean flag = redisTemplate.opsForValue().setIfAbsent(outTradeNo, "ok", 3, TimeUnit.DAYS);
+                if (flag){
+                    rabbitTemplate.convertAndSend(rabbitMQConfig.getOrderEventExchange(),
+                            rabbitMQConfig.getOrderUpdateTrafficRoutingKey(),
+                            eventMessage
+                    );
+                }
                return JsonData.buildSuccess();
             }
         }
