@@ -28,7 +28,7 @@ public class ProductController {
      * @author
      * @date
      */
-    @GetMapping
+    @GetMapping("/list")
     public JsonData list(){
        List<ProductVo>productVoList = productService.list();
        return JsonData.buildSuccess(productVoList);
