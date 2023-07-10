@@ -222,6 +222,7 @@ public class ProductOrderServiceImpl  implements ProductOrderService {
 //            消费;
             //tradeState 1.SUCCESS 2.fail......支付状态
             if ("SUCCESS".equalsIgnoreCase(tradeState)){
+                //解决微信重复推送的问题;
                 Boolean flag = redisTemplate.opsForValue().setIfAbsent(outTradeNo, "ok", 3, TimeUnit.DAYS);
                 if (flag){
                     rabbitTemplate.convertAndSend(rabbitMQConfig.getOrderEventExchange(),
@@ -233,6 +234,29 @@ public class ProductOrderServiceImpl  implements ProductOrderService {
             }
         }
         return JsonData.buildResult(BizCodeEnum.PAY_ORDER_CALLBACK_NOT_SUCCESS);
+    }
+    /**
+     * @description TODO
+     * 处理队列里面订单相关消息;
+     * @return
+     * @author
+     * @date
+     */
+    @Override
+    public void handleProductMessage(EventMessage eventMessage) {
+
+        String messageType = eventMessage.getEventMessageType();
+        //        关闭订单的情况
+        if (EventMessageType.PRODUCT_ORDER_NEW.name().equalsIgnoreCase(messageType)){
+            this.closeProductOrder(eventMessage);
+        }else if(EventMessageType.PRODUCT_ORDER_PAY.name().equalsIgnoreCase(messageType)){
+            //订单已经支付,更新订单状态;
+            String outTradeNo = eventMessage.getBizId();
+            Long accountNo = eventMessage.getAccountNo();
+            int rows = productOrderManager.updateOrderPayState(outTradeNo, accountNo,
+                    ProductOrderStateEnum.PAY.name(), ProductOrderStateEnum.NEW.name());
+            log.info("订单更新成功",rows,eventMessage);
+        }
     }
 
 

@@ -25,7 +25,11 @@ import java.io.IOException;
 
 @Component
 @Slf4j
-@RabbitListener(queuesToDeclare = {@Queue("order.close.queue")})
+@RabbitListener(queuesToDeclare = {
+        @Queue("order.close.queue"),
+        @Queue("order.update.queue")
+
+})
 public class ProductOrderMQListener {
     @Autowired
     private ProductOrderService productOrderService;
@@ -34,10 +38,11 @@ public class ProductOrderMQListener {
     public void productOrderHandler(EventMessage eventMessage, Message message, Channel channel) throws IOException {
         log.info("监听到消息ProductOrderMQListener message消息内容:{}", message);
         try {
-            //TODO 处理业务逻辑
-            productOrderService.closeProductOrder(eventMessage);
+            productOrderService.handleProductMessage(eventMessage);
+            //TODO 处理业务逻辑(关闭订单)
+         //   productOrderService.closeProductOrder(eventMessage);
 
-        } catch (Exception e) {
+         } catch (Exception e) {
 
             //处理业务异常，还有进行其他操作，比如记录失败原因
             log.error("消费失败:{}", eventMessage);
