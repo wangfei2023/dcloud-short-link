@@ -2,6 +2,7 @@ package net.xdclass.service;
 
 import net.xdclass.controller.request.ConfirmOrderRequest;
 import net.xdclass.controller.request.ProductOrderPageRequest;
+import net.xdclass.enums.ProductOrderPayTypeEnum;
 import net.xdclass.model.EventMessage;
 import net.xdclass.model.ProductOrderDO;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -44,4 +45,12 @@ public interface ProductOrderService {
  * @date  
  */
     boolean closeProductOrder(EventMessage eventMessage);
+   /**
+    * @description TODO 
+    * 处理微信回调通知;
+    * @return 
+    * @author 
+    * @date  
+    */
+    JsonData processOrderCallBackMsg(ProductOrderPayTypeEnum wechatPay, Map<String, String> paramMap);
 }

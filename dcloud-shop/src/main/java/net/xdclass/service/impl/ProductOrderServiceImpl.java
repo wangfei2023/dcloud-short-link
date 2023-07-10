@@ -28,6 +28,7 @@ import org.omg.PortableInterceptor.Interceptor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.smartcardio.CommandAPDU;
@@ -186,6 +187,43 @@ public class ProductOrderServiceImpl  implements ProductOrderService {
             }
         }
         return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRED)
+    public JsonData processOrderCallBackMsg(ProductOrderPayTypeEnum payType, Map<String, String> paramMap) {
+        String outTradeNo = paramMap.get("out_trade_no");
+        String tradeState = paramMap.get("trade_state");
+        long accountNo = Long.valueOf(paramMap.get("account_no"));
+        //查询订单信息详情;
+        ProductOrderDO productOrderDO = productOrderManager.findOutTradeNoAndAccount(outTradeNo, accountNo);
+        Map<String, Object> content = new HashMap<>(4);
+        content.put("outTradeNo", outTradeNo);
+        content.put("buyNum", productOrderDO.getBuyNum());
+        content.put("accountNo", productOrderDO.getAccountNo());
+        content.put("product", JsonUtil.obj2Json(productOrderDO.getProductSnapshot()));
+        //创建消息;
+        EventMessage eventMessage = EventMessage.builder()
+                .bizId(outTradeNo)
+                .accountNo(accountNo)
+                .messageId(outTradeNo)
+                .content(JsonUtil.obj2Json(content))
+                .eventMessageType(EventMessageType.ORDER_PAY.name())
+                .build();
+        if (payType.name().equalsIgnoreCase(ProductOrderPayTypeEnum.ALI_PAY.name())){
+             //支付宝支付;
+        }else if(payType.name().equalsIgnoreCase(ProductOrderPayTypeEnum.WECHAT_PAY.name())){
+//            消费;
+            //tradeState 1.SUCCESS 2.fail......支付状态
+            if ("SUCCESS".equalsIgnoreCase(tradeState)){
+               rabbitTemplate.convertAndSend(rabbitMQConfig.getOrderEventExchange(),
+                       rabbitMQConfig.getOrderUpdateTrafficRoutingKey(),
+                       eventMessage
+                       );
+               return JsonData.buildSuccess();
+            }
+        }
+        return JsonData.buildResult(BizCodeEnum.PAY_ORDER_CALLBACK_NOT_SUCCESS);
     }
 
 

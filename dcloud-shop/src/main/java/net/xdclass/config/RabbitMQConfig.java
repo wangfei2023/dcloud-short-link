@@ -123,6 +123,79 @@ public class RabbitMQConfig {
 
         return new Binding(orderCloseQueue,Binding.DestinationType.QUEUE,orderEventExchange,orderCloseRoutingKey,null);
     }
+    
+    //==============================================订单支付成功配置==========================================
+    /**
+     * @description TODO 
+     * 更新订单队列
+     * @return 
+     * @author 
+     * @date  
+     */
+    /**
+     * 更新订单 队列
+     */
+    private String orderUpdateQueue="order.update.queue";
+
+    /**
+     * 根据订单发放流量包 队列
+     */
+    private String orderTrafficQueue="order.traffic.queue";
+
+    /**
+     * 微信回调通知routingKey,【发送消息使用】
+     */
+    private String orderUpdateTrafficRoutingKey="order.update.traffic.routing.key";
+
+    /**
+     * topic类型的binding key，用于绑定队列和交换机，是用于 订单 消费者，更新订单状态
+     */
+    private String orderUpdateBindingKey="order.update.*.routing.key";
+
+    /**
+     * topic类型的binding key，用于绑定队列和交换机，是用于 账号 消费者，发放流量包
+     */
+    private String orderTrafficBindingKey="order.*.traffic.routing.key";
+
+
+    /**
+     * 订单更新队列和交换机的绑定关系建立
+     */
+    @Bean
+    public Binding orderUpdateBinding(){
+        return new Binding(orderUpdateQueue,Binding.DestinationType.QUEUE, orderEventExchange,orderUpdateBindingKey,null);
+    }
+
+
+    /**
+     * 发放流量包队列和交换机的绑定关系建立
+     */
+    @Bean
+    public Binding orderTrafficBinding(){
+        return new Binding(orderTrafficQueue,Binding.DestinationType.QUEUE, orderEventExchange,orderTrafficBindingKey,null);
+    }
+
+
+    /**
+     * 更新订单状态队列 普通队列，用于被监听
+     */
+    @Bean
+    public Queue orderUpdateQueue(){
+
+        return new Queue(orderUpdateQueue,true,false,false);
+
+    }
+
+    /**
+     * 发放流量包队列 普通队列，用于被监听
+     */
+    @Bean
+    public Queue orderTrafficQueue(){
+
+        return new Queue(orderTrafficQueue,true,false,false);
+
+    }
+
 }
 
 

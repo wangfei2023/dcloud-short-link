@@ -14,11 +14,15 @@ import com.wechat.pay.contrib.apache.httpclient.auth.ScheduledUpdateCertificates
 import com.wechat.pay.contrib.apache.httpclient.util.AesUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.xdclass.config.WeChatPayConfig;
+import net.xdclass.enums.ProductOrderPayTypeEnum;
 import net.xdclass.service.ProductOrderService;
+import net.xdclass.utils.JsonData;
 import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -43,13 +47,14 @@ public class PayCallBackController {
     @Autowired
     private ScheduledUpdateCertificatesVerifier verifier;
     @RequestMapping("wechat")
+    @ResponseBody
     public Map<String,String>wecatPayCallBack(HttpServletRequest request, HttpServletResponse response){
         //获取报文（以流的形式读取;）
        String body = getRequestBody(request);
         //随机串
         String nonceStr = request.getHeader("Wechatpay-Nonce");
 
-        //微信传递过来的签名
+        //微信传递过来的签名 m
         String signature = request.getHeader("Wechatpay-Signature");
 
         //证书序列号（微信平台）
@@ -72,13 +77,12 @@ public class PayCallBackController {
                 String plainBody = decryptBody(body);
                 log.info("解密后的明文：{}",plainBody);
                 Map<String, String> paramMap = covertWechatPayMsgToMap(plainBody);
-            }
             //处理业务逻辑;TODO：
-
-
+                JsonData jsonData = productOrderService.processOrderCallBackMsg(ProductOrderPayTypeEnum.WECHAT_PAY, paramMap);
 //            响应微信
             map.put("code","SUCCESS");
             map.put("message","成功");
+            }
         } catch (Exception e) {
             log.error("微信支付回调异常",e);
         }

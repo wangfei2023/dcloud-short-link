@@ -93,5 +93,14 @@ public enum EventMessageType {
  * @author
  * @date
  */
- PRODUCT_ORDER_NEW;
+ PRODUCT_ORDER_NEW,
+
+ /**
+  * @description 订单支付
+  *
+  * @return
+  * @author
+  * @date
+  */
+ ORDER_PAY;
 }
