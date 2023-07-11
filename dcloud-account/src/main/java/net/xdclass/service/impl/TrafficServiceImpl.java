@@ -48,14 +48,14 @@ public class TrafficServiceImpl implements TrafficService {
         String eventMessageType = eventMessage.getEventMessageType();
         if (EventMessageType.PRODUCT_ORDER_PAY.name().equalsIgnoreCase(eventMessageType)){
             String content = eventMessage.getContent();
-            Map orderInfoMap = JsonUtil.json2Obj(content, Map.class);
+            Map<String,Object> orderInfoMap = JsonUtil.json2Obj(content, Map.class);
             //空间换时间;将订单信息存储在mq里面;
             long accountNo =(Long) orderInfoMap.get("accountNo");
             String outTradeNo =(String) orderInfoMap.get("outTradeNo");
             Integer buyNum =(Integer) orderInfoMap.get("buyNum");
             String productStr =(String) orderInfoMap.get("product");
             ProductVo productVo = JsonUtil.json2Obj(productStr, ProductVo.class);
-            log.info("商品信息",productVo);
+            log.info("商品信息productVo={}",productVo);
            //流量包有效期;
             LocalDateTime expireDateTime = LocalDateTime.now().plusDays(productVo.getValidDay());
             java.util.Date date = Date.from(expireDateTime.atZone(ZoneId.systemDefault()).toInstant());

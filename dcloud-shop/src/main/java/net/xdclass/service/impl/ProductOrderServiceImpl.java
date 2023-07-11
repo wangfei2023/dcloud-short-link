@@ -207,14 +207,14 @@ public class ProductOrderServiceImpl  implements ProductOrderService {
         content.put("outTradeNo", outTradeNo);
         content.put("buyNum", productOrderDO.getBuyNum());
         content.put("accountNo", productOrderDO.getAccountNo());
-        content.put("product", JsonUtil.obj2Json(productOrderDO.getProductSnapshot()));
+        content.put("product", productOrderDO.getProductSnapshot());
         //创建消息;
         EventMessage eventMessage = EventMessage.builder()
                 .bizId(outTradeNo)
                 .accountNo(accountNo)
                 .messageId(outTradeNo)
                 .content(JsonUtil.obj2Json(content))
-                .eventMessageType(EventMessageType.ORDER_PAY.name())
+                .eventMessageType(EventMessageType.PRODUCT_ORDER_PAY.name())
                 .build();
         if (payType.name().equalsIgnoreCase(ProductOrderPayTypeEnum.ALI_PAY.name())){
              //支付宝支付;
@@ -246,6 +246,8 @@ public class ProductOrderServiceImpl  implements ProductOrderService {
     public void handleProductMessage(EventMessage eventMessage) {
 
         String messageType = eventMessage.getEventMessageType();
+
+        log.info("打印eventMessage={}",eventMessage);
         //        关闭订单的情况
         if (EventMessageType.PRODUCT_ORDER_NEW.name().equalsIgnoreCase(messageType)){
             this.closeProductOrder(eventMessage);

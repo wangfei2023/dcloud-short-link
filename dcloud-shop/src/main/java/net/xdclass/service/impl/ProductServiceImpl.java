@@ -26,8 +26,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductVo> list() {
         List<ProductDO>productDOList=productManager.list();
-        productDOList.stream().map(obj->BeanProcess(obj)).collect(Collectors.toList());
-        return null;
+        List<ProductVo> productVoList = productDOList.stream().map(obj -> BeanProcess(obj)).collect(Collectors.toList());
+        return productVoList;
     }
 
     @Override

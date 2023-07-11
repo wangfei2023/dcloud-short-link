@@ -22,8 +22,8 @@ public class TrafficTest {
 
         Random random = new Random();
         for (int i = 0; i < 3; i++) {
-            TrafficDO trafficDO = new TrafficDO();
-            trafficDO.setAccountNo(Long.valueOf(random.nextInt(1000)));
+            TrafficDO trafficDO = TrafficDO.builder()
+                    .accountNo(Long.valueOf(random.nextInt(1000))).build();
             trafficMapper.insert(trafficDO);
         }
     }
