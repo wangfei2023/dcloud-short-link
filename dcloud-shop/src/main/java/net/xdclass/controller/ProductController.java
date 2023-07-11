@@ -34,7 +34,7 @@ public class ProductController {
        return JsonData.buildSuccess(productVoList);
     }
 
-    @GetMapping("detail/{product_id}")
+    @GetMapping("/detail/{product_id}")
     public JsonData detail(@PathVariable(value = "product_id") long productId){
         ProductVo productVo=productService.findDetailById(productId);
         return JsonData.buildSuccess(productVo);

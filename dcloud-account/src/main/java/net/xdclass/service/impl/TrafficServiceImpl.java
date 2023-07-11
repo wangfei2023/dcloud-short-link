@@ -8,15 +8,18 @@
 
 package net.xdclass.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.extern.slf4j.Slf4j;
 import net.xdclass.enums.EventMessageType;
+import net.xdclass.feign.ProductFeignService;
 import net.xdclass.interceptor.LoginInterceptor;
 import net.xdclass.manager.TrafficManage;
 import net.xdclass.model.EventMessage;
 import net.xdclass.model.TrafficDO;
 import net.xdclass.request.TrafficPageRequest;
 import net.xdclass.service.TrafficService;
+import net.xdclass.utils.JsonData;
 import net.xdclass.utils.JsonUtil;
 import net.xdclass.vo.ProductVo;
 import net.xdclass.vo.TrafficVo;
@@ -50,15 +53,18 @@ import java.util.stream.Collectors;
 public class TrafficServiceImpl implements TrafficService {
     @Autowired
     private TrafficManage trafficManage;
+
+    @Autowired
+    private ProductFeignService productFeignService;
     @Override
     @Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRED)
     public void handlerTraffcMessage(EventMessage eventMessage) {
         String eventMessageType = eventMessage.getEventMessageType();
+        Long accountNo = eventMessage.getAccountNo();
         if (EventMessageType.PRODUCT_ORDER_PAY.name().equalsIgnoreCase(eventMessageType)){
             String content = eventMessage.getContent();
             Map<String,Object> orderInfoMap = JsonUtil.json2Obj(content, Map.class);
             //空间换时间;将订单信息存储在mq里面;
-            long accountNo =(Long) orderInfoMap.get("accountNo");
             String outTradeNo =(String) orderInfoMap.get("outTradeNo");
             Integer buyNum =(Integer) orderInfoMap.get("buyNum");
             String productStr =(String) orderInfoMap.get("product");
@@ -79,6 +85,23 @@ public class TrafficServiceImpl implements TrafficService {
                     .build();
             int rows = trafficManage.add(trafficDO);
             log.info("消费消息新增流量包:rows={},trafficDO={}",rows,trafficDO);
+        }else if(EventMessageType.TRAFFIC_FREE_INIT.name().equalsIgnoreCase(eventMessageType)){
+            //发放免费流量包;
+            Long productId = Long.valueOf(eventMessage.getBizId());
+            JsonData jsonData = productFeignService.detail(productId);
+            ProductVo productVo = jsonData.getData(new TypeReference<ProductVo>() {
+            });
+            TrafficDO trafficDO = TrafficDO.builder()
+                    .accountNo(accountNo)
+                    .dayLimit(productVo.getDayTimes())
+                    .totalLimit(productVo.getTotalTimes())
+                    .pluginType(productVo.getPluginType())
+                    .level(productVo.getLevel())
+                    .productId(productVo.getId())
+                    .outTradeNo("free_init")
+                    .expiredDate(new java.util.Date())
+                    .build();
+            trafficManage.add(trafficDO);
         }
     }
 
