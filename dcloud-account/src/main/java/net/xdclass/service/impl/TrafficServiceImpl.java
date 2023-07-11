@@ -8,14 +8,19 @@
 
 package net.xdclass.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.extern.slf4j.Slf4j;
 import net.xdclass.enums.EventMessageType;
+import net.xdclass.interceptor.LoginInterceptor;
 import net.xdclass.manager.TrafficManage;
 import net.xdclass.model.EventMessage;
 import net.xdclass.model.TrafficDO;
+import net.xdclass.request.TrafficPageRequest;
 import net.xdclass.service.TrafficService;
 import net.xdclass.utils.JsonUtil;
 import net.xdclass.vo.ProductVo;
+import net.xdclass.vo.TrafficVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -24,7 +29,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @description TODO
@@ -73,6 +81,39 @@ public class TrafficServiceImpl implements TrafficService {
             log.info("消费消息新增流量包:rows={},trafficDO={}",rows,trafficDO);
         }
     }
+
+    @Override
+    public Map<String, Object> page(TrafficPageRequest request) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        IPage<TrafficDO> trafficDOIPage = trafficManage.pageAvaliable(request.getPage(), request.getSize(), accountNo);
+      //获取流量包;
+        List<TrafficDO> records = trafficDOIPage.getRecords();
+        List<TrafficVo> trafficVoList = records.stream().map(obj ->
+                beanProceross(obj)
+        ).collect(Collectors.toList());
+        HashMap<String, Object> pageMap = new HashMap<>(3);
+        pageMap.put("total_record",trafficDOIPage.getTotal());
+        pageMap.put("total_page",trafficDOIPage.getPages());
+        pageMap.put("current_data",trafficVoList);
+        return pageMap;
+    }
+
+    @Override
+    public TrafficVo detail(long trafficId) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        TrafficDO trafficDO = trafficManage.findByIdAndAccountNo(trafficId, accountNo);
+//        TrafficVo trafficVo = new TrafficVo();
+//        BeanUtils.copyProperties(trafficDO,trafficVo);
+        return   beanProceross(trafficDO);
+    }
+
+    public TrafficVo beanProceross(TrafficDO trafficDO){
+         TrafficVo trafficVo = new TrafficVo();
+         BeanUtils.copyProperties(trafficDO,trafficVo);
+         return trafficVo;
+     }
+
+
 }
 
 

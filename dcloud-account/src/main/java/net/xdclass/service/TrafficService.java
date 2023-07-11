@@ -9,9 +9,17 @@
 package net.xdclass.service;
 
 import net.xdclass.model.EventMessage;
+import net.xdclass.request.TrafficPageRequest;
+import net.xdclass.vo.TrafficVo;
+
+import java.util.Map;
 
 public interface TrafficService {
     void handlerTraffcMessage(EventMessage eventMessage);
+
+    Map<String, Object> page(TrafficPageRequest request);
+
+    TrafficVo detail(long trafficId);
 }
 
 
