@@ -14,7 +14,7 @@ public interface ProductFeignService {
      * @param productId
      * @return
      */
-    @GetMapping("/api/product/v1/detail/{product_id}")
+    @GetMapping(value = "/api/product/v1/detail/{product_id}")
     JsonData detail(@PathVariable("product_id") long productId);
 
 }

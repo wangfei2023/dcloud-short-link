@@ -88,7 +88,7 @@ public class TrafficServiceImpl implements TrafficService {
         }else if(EventMessageType.TRAFFIC_FREE_INIT.name().equalsIgnoreCase(eventMessageType)){
             //发放免费流量包;
             Long productId = Long.valueOf(eventMessage.getBizId());
-            JsonData jsonData = productFeignService.detail(productId);
+           JsonData jsonData = productFeignService.detail(productId);
             ProductVo productVo = jsonData.getData(new TypeReference<ProductVo>() {
             });
             TrafficDO trafficDO = TrafficDO.builder()
@@ -135,7 +135,6 @@ public class TrafficServiceImpl implements TrafficService {
          BeanUtils.copyProperties(trafficDO,trafficVo);
          return trafficVo;
      }
-
 
 }
 

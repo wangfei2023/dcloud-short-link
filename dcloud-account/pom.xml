@@ -11,10 +11,10 @@
 
     <artifactId>dcloud-account</artifactId>
     <dependencies>
-        <dependency>
-            <groupId>net.xdclass</groupId>
-            <artifactId>dcloud-common</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>net.xdclass</groupId>-->
+<!--            <artifactId>dcloud-common</artifactId>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>net.xdclass</groupId>
             <artifactId>dcloud-common</artifactId>
