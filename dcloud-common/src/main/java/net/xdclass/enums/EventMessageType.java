@@ -95,14 +95,6 @@ public enum EventMessageType {
  */
  PRODUCT_ORDER_NEW,
 
- /**
-  * @description 订单支付
-  *
-  * @return
-  * @author
-  * @date
-  */
- ORDER_PAY,
 
  /**
   * @description 订单支付
@@ -111,5 +103,14 @@ public enum EventMessageType {
   * @author
   * @date
   */
- PRODUCT_ORDER_PAY;
+ PRODUCT_ORDER_PAY,
+
+ /**
+  * @description 初始免费流量包发放消息
+  *
+  * @return
+  * @author
+  * @date
+  */
+ TRAFFIC_FREE_INIT;
 }

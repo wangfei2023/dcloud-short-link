@@ -1,12 +1,16 @@
 package net.xdclass.service.impl;
 
+import com.alibaba.csp.sentinel.util.IdUtil;
 import lombok.extern.slf4j.Slf4j;
+import net.xdclass.config.RabbitMQConfig;
 import net.xdclass.enums.AuthTypeEnum;
 import net.xdclass.enums.BizCodeEnum;
+import net.xdclass.enums.EventMessageType;
 import net.xdclass.enums.SendCodeEnum;
 import net.xdclass.manager.AccountManager;
 import net.xdclass.mapper.AccountMapper;
 import net.xdclass.model.AccountDO;
+import net.xdclass.model.EventMessage;
 import net.xdclass.model.LoginUser;
 import net.xdclass.request.AccountLoginRequest;
 import net.xdclass.request.AccountRegisterRequest;
@@ -19,9 +23,12 @@ import net.xdclass.utils.JsonData;
 import org.apache.commons.codec.digest.Md5Crypt;
 import org.apache.commons.lang3.ObjectUtils;
 import org.bouncycastle.jcajce.provider.digest.MD5;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -41,7 +48,15 @@ public class AccountServiceImpl implements AccountService {
  private NotifyService notifyService;
  @Autowired
  private AccountManager accountManager;
+
+ @Autowired
+ private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private RabbitMQConfig rabbitMQConfig;
+ private static final Long FREE_TRAFFIC_PRODUCT_ID=1L;
     @Override
+    @Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRED)
     public JsonData register(AccountRegisterRequest accountRegisterRequest) {
 
          //todo:手机验证码验证
@@ -100,7 +115,14 @@ public class AccountServiceImpl implements AccountService {
     }
     //注册成功的用户发放福利;
     private void userRegisterInitTask(AccountDO accountDO){
-
+        EventMessage eventMessage = EventMessage.builder()
+                .messageId(IDUtil.geneSnowFlakeID().toString())
+                .accountNo(accountDO.getAccountNo())
+                .eventMessageType(EventMessageType.TRAFFIC_FREE_INIT.name())
+                .bizId(FREE_TRAFFIC_PRODUCT_ID.toString())
+                .build();
+        rabbitTemplate.convertAndSend(rabbitMQConfig.getTrafficEventExchange(),
+                rabbitMQConfig.getTrafficFreeInitRoutingKey(),eventMessage);
     }
     /*
     测试盐—+秘钥(密码进行加密测试)
