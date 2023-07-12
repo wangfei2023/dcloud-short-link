@@ -16,6 +16,7 @@
         <module>dcloud-gateway</module>
         <module>dcloud-link</module>
         <module>dcloud-shop</module>
+
     </modules>
 
     <properties>
@@ -34,7 +35,7 @@
         <commons.lang3.version>3.9</commons.lang3.version>
         <commons.codec.version>1.15</commons.codec.version>
 
-        <xxl-job.version>2.3.0</xxl-job.version>
+        <xxl-job.version>2.2.0</xxl-job.version>
 
         <aliyun.oss.version>3.16.1</aliyun.oss.version>
 

@@ -20,6 +20,15 @@ public interface TrafficService {
     Map<String, Object> page(TrafficPageRequest request);
 
     TrafficVo detail(long trafficId);
+
+    /**
+     * @description TODO
+     * 删除过期的流量包
+     * @return
+     * @author
+     * @date
+     */
+    boolean deleteExpireTraffic();
 }
 
 
