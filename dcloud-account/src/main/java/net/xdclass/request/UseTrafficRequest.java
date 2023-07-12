@@ -12,8 +12,27 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
 public class UseTrafficRequest {
+    /**
+     * @description TODO 
+     * 账号
+     * @return 
+     * @author 
+     * @date  
+     */
+    private Long accountNo;
+
+
+    /**
+     * @description TODO
+     * 业务的id,短链码;
+     * @return
+     * @author
+     * @date
+     */
+    private String bizId;
+
+    
 }
 
 

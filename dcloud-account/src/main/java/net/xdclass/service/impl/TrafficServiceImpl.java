@@ -11,30 +11,32 @@ package net.xdclass.service.impl;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.extern.slf4j.Slf4j;
+import net.xdclass.enums.BizCodeEnum;
 import net.xdclass.enums.EventMessageType;
+import net.xdclass.exception.BizException;
 import net.xdclass.feign.ProductFeignService;
 import net.xdclass.interceptor.LoginInterceptor;
 import net.xdclass.manager.TrafficManage;
 import net.xdclass.model.EventMessage;
 import net.xdclass.model.TrafficDO;
 import net.xdclass.request.TrafficPageRequest;
+import net.xdclass.request.UseTrafficRequest;
 import net.xdclass.service.TrafficService;
 import net.xdclass.utils.JsonData;
 import net.xdclass.utils.JsonUtil;
+import net.xdclass.utils.TimeUtil;
 import net.xdclass.vo.ProductVo;
 import net.xdclass.vo.TrafficVo;
+import net.xdclass.vo.UserTrafficVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -72,7 +74,7 @@ public class TrafficServiceImpl implements TrafficService {
             log.info("商品信息productVo={}",productVo);
            //流量包有效期;
             LocalDateTime expireDateTime = LocalDateTime.now().plusDays(productVo.getValidDay());
-            java.util.Date date = Date.from(expireDateTime.atZone(ZoneId.systemDefault()).toInstant());
+            Date date = Date.from(expireDateTime.atZone(ZoneId.systemDefault()).toInstant());
             TrafficDO trafficDO = TrafficDO.builder()
                     .accountNo(accountNo)
                     .dayLimit(productVo.getDayTimes() * buyNum)
@@ -134,6 +136,84 @@ public class TrafficServiceImpl implements TrafficService {
     public boolean deleteExpireTraffic() {
         boolean flag=trafficManage.deleteExpireTraffic();
         return flag;
+    }
+/**
+ * @description TODO
+ * * 查询用户全部可用流量包
+ * * 遍历用户可用流量包
+ *   * 判断是否更新-用日期判断
+ *     * 没更新的流量包后加入【待更新集合】中
+ *       * 增加【今天剩余可用总次数】
+ *     * 已经更新的判断是否超过当天使用次数
+ *       * 如果没超过则增加【今天剩余可用总次数】
+ *       * 超过则忽略
+ *
+ * * 更新用户今日流量包相关数据
+ * * 扣减使用的某个流量包使用次数
+ * @return
+ * @author
+ * @date
+ */
+    @Override
+    @Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRED)
+    public JsonData reduce(UseTrafficRequest useTrafficRequest) {
+        Long accountNo = useTrafficRequest.getAccountNo();
+        //处理流量包,筛选未更新的流量包，当前使用的流量包;
+        UserTrafficVo userTrafficVo = processTrafficList(accountNo);
+        log.info("今天可用总次数：{},当前使用流量{}",userTrafficVo.getDayTotalLeftTimes(),userTrafficVo.getCurrentTrafficDo());
+        if (userTrafficVo.getCurrentTrafficDo()==null){
+            return JsonData.buildResult(BizCodeEnum.TRAFFIC_REDUCE_FAIL);
+        }
+        log.info("待更新的流量包列表{}",userTrafficVo.getUnUpdateTrafficIds());
+        if (userTrafficVo.getUnUpdateTrafficIds().size()>0){
+            trafficManage.batchUpdateUsedTimes(accountNo,userTrafficVo.getUnUpdateTrafficIds());
+        }
+        //先更新,再扣减对应的流量包;
+        int rows = trafficManage.addDayUsedTimes(accountNo, userTrafficVo.getCurrentTrafficDo().getId(), 1);
+        //扣减不成功;
+        if (rows!=1){
+            throw new BizException(BizCodeEnum.TRAFFIC_REDUCE_FAIL);
+        }
+        return JsonData.buildSuccess();
+    }
+
+    private UserTrafficVo processTrafficList(Long accountNo) {
+        List<TrafficDO> trafficDOList = trafficManage.selectAvailableTraffics(accountNo);
+        if (trafficDOList==null || trafficDOList.size()==0){
+            throw new BizException(BizCodeEnum.TRAFFIC_EXCEPTION);
+        }
+        Integer dayTotalLeftTimes = 0;
+        TrafficDO CurrentTrafficDO = null;
+        //没过期,但今天未更新的流量包;
+         List<Long> unUpdateTrafficIds = new ArrayList<>();
+       //今天日期;
+        String today = TimeUtil.format(new Date(), "yyyy-MM-dd");
+        for (TrafficDO trafficDO : trafficDOList){
+            String trafficUpdatedate = TimeUtil.format( trafficDO.getGmtModified(), "yyyy-MM-dd");
+            //已经更新的
+            if (trafficUpdatedate.equalsIgnoreCase(today)){
+                //已经更新,天剩余可用总次数=总次数-已用
+                int dayleftTimes=trafficDO.getDayLimit()-trafficDO.getDayUsed();
+                //总的流量包;
+                dayTotalLeftTimes=dayTotalLeftTimes+dayleftTimes;
+                //选取当次使用流量包;
+                if (dayleftTimes>0 &&CurrentTrafficDO==null){
+                    CurrentTrafficDO=trafficDO;
+                }
+            }else {
+                //未更新
+                dayTotalLeftTimes=dayTotalLeftTimes+trafficDO.getDayLimit();
+                //记录未更新的流量包;
+                unUpdateTrafficIds.add(trafficDO.getId());
+                //选取当次使用的流量包
+                if (CurrentTrafficDO==null){
+                    CurrentTrafficDO=trafficDO;
+                }
+            }
+
+        }
+        UserTrafficVo userTrafficVo = new UserTrafficVo(dayTotalLeftTimes, CurrentTrafficDO, unUpdateTrafficIds);
+        return userTrafficVo;
     }
 
     public TrafficVo beanProceross(TrafficDO trafficDO){

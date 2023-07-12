@@ -10,6 +10,8 @@ package net.xdclass.service;
 
 import net.xdclass.model.EventMessage;
 import net.xdclass.request.TrafficPageRequest;
+import net.xdclass.request.UseTrafficRequest;
+import net.xdclass.utils.JsonData;
 import net.xdclass.vo.TrafficVo;
 
 import java.util.Map;
@@ -29,6 +31,8 @@ public interface TrafficService {
      * @date
      */
     boolean deleteExpireTraffic();
+
+    JsonData reduce(UseTrafficRequest useTrafficRequest);
 }
 
 
