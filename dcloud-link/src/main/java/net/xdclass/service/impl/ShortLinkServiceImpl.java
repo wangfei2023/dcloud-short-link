@@ -7,7 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONUtil;
 import net.xdclass.compant.ShortLinkComponent;
 import net.xdclass.config.RabbitMQConfig;
+import net.xdclass.constant.RedisKey;
 import net.xdclass.controller.request.*;
+import net.xdclass.enums.BizCodeEnum;
 import net.xdclass.enums.DomainTypeEnum;
 import net.xdclass.enums.EventMessageType;
 import net.xdclass.enums.ShortLinkStateEnum;
@@ -77,19 +79,39 @@ public class ShortLinkServiceImpl implements ShortLinkService {
         BeanUtils.copyProperties(shortLinkDO,shortLinkVo);
         return shortLinkVo;
     }
-
+//创建短链-->预扣减-->从redis查询,如果rediskey>0,与扣减成功,发送到rabbitmq,客户端远程调用扣减流量包,查询流量包，更新流量包,在扣减流量包;
     @Override
     public JsonData createShortLink(ShortLinkAddRequest request) {
         long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
-        String newOriginalUrl = request.getOriginalUrl();
-        request.setOriginalUrl(CommonUtil.addUrlPrefix(newOriginalUrl));
-        EventMessage eventMessage = EventMessage.builder().accountNo(accountNo)
-                .content(JsonUtil.obj2Json(request))
-                .messageId(IDUtil.geneSnowFlakeID().toString())
-                .eventMessageType(EventMessageType.SHORT_LINK_ADD.name())
-                .build();
-        rabbitTemplate.convertAndSend(rabbitMQConfig.getShortLinkEventExchange(),rabbitMQConfig.getShortLinkAddRoutingKey(),eventMessage);
-        return JsonData.buildSuccess();
+        //预扣减流量包Lua脚本
+        //需要预先检查下是否有足够多的可以进行创建
+        String cacheKey = String.format(RedisKey.DAY_TOTAL_TRAFFIC, accountNo);
+
+        //检查key是否存在，然后递减，是否大于等于0，使用lua脚本
+        // 如果key不存在，则未使用过，lua返回值是0； 新增流量包的时候，不用重新计算次数，直接删除key,消费的时候回计算更新
+        //todo:if redis.call('get',KEYS[1]) 获取到值,代表key未过期,return redis.call('decr',KEYS[1])  -->KEYS递减; else return 0 end,
+        // 否则key过期,返回0;
+        //第一次创建短链从redis查询数据key为null;
+        String script = "if redis.call('get',KEYS[1]) then return redis.call('decr',KEYS[1]) else return 0 end";
+        Long leftTimes = redisTemplate.execute(new DefaultRedisScript<>(script, Long.class), Arrays.asList(cacheKey), "");
+        log.info("今日流量包剩余次数:{}", leftTimes);
+
+        if (leftTimes >= 0) {//有流量包使用;
+            String newOriginalUrl = CommonUtil.addUrlPrefix(request.getOriginalUrl());
+            request.setOriginalUrl(newOriginalUrl);
+
+            EventMessage eventMessage = EventMessage.builder().accountNo(accountNo)
+                    .content(JsonUtil.obj2Json(request))
+                    .messageId(IDUtil.geneSnowFlakeID().toString())
+                    .eventMessageType(EventMessageType.SHORT_LINK_ADD.name())
+                    .build();
+
+            rabbitTemplate.convertAndSend(rabbitMQConfig.getShortLinkEventExchange(), rabbitMQConfig.getShortLinkAddRoutingKey(), eventMessage);
+            return JsonData.buildSuccess();
+      //流量包不足;
+        } else {
+            return JsonData.buildResult(BizCodeEnum.TRAFFIC_REDUCE_FAIL);
+        }
     }
     //生成长链摘要
 //判断短链域名是否合法

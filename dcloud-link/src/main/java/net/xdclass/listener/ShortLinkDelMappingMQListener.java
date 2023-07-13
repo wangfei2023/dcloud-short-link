@@ -36,7 +36,7 @@ public class ShortLinkDelMappingMQListener {
 
     @RabbitHandler
     public void shortLinkHandler(EventMessage eventMessage, Message message, Channel channel) throws IOException {
-        log.info("监听到消息ShortLinkDelMappingMQListener message消息内容:{}",message);
+        log.info("监听到消息ShortLinkAddMappingMQListener message消息内容:{}",message);
         try{
 
             eventMessage.setEventMessageType(EventMessageType.SHORT_LINK_DEL_MAPPING.name());
