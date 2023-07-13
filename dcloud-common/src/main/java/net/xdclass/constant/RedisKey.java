@@ -14,4 +14,7 @@ public class RedisKey {
    public static final String CHECK_CODE_KEY="code:%s:%s";
 
     public static final String SUBMIT_ORDER_TOKEN_KEY="order:submit:%s:%s";
+
+//    一天的总的流量包;
+    public static final String DAY_TOTAL_TRAFFIC="lock:traffic:day_total:%s";//%s账号
 }

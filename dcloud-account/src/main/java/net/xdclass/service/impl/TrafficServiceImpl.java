@@ -11,6 +11,7 @@ package net.xdclass.service.impl;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.extern.slf4j.Slf4j;
+import net.xdclass.constant.RedisKey;
 import net.xdclass.enums.BizCodeEnum;
 import net.xdclass.enums.EventMessageType;
 import net.xdclass.exception.BizException;
@@ -30,6 +31,7 @@ import net.xdclass.vo.TrafficVo;
 import net.xdclass.vo.UserTrafficVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -58,6 +61,9 @@ public class TrafficServiceImpl implements TrafficService {
 
     @Autowired
     private ProductFeignService productFeignService;
+
+    @Autowired
+    private RedisTemplate<Object,Object> redisTemplate;
     @Override
     @Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRED)
     public void handlerTraffcMessage(EventMessage eventMessage) {
@@ -87,6 +93,9 @@ public class TrafficServiceImpl implements TrafficService {
                     .build();
             int rows = trafficManage.add(trafficDO);
             log.info("消费消息新增流量包:rows={},trafficDO={}",rows,trafficDO);
+            String totalTrafficTimeKey=String.format(RedisKey.DAY_TOTAL_TRAFFIC,accountNo);
+            //当新增流量包时,删除对应得key
+            redisTemplate.delete(totalTrafficTimeKey);
         }else if(EventMessageType.TRAFFIC_FREE_INIT.name().equalsIgnoreCase(eventMessageType)){
             //发放免费流量包;
             Long productId = Long.valueOf(eventMessage.getBizId());
@@ -174,6 +183,10 @@ public class TrafficServiceImpl implements TrafficService {
         if (rows!=1){
             throw new BizException(BizCodeEnum.TRAFFIC_REDUCE_FAIL);
         }
+        //往redis设置下总的流量包的次数,短链服务那边递减,如果新增流量包,则删除这个key
+        long leftSeconds=TimeUtil.getRemainSecondsOneDay(new Date());
+        String totalTrafficTimeKey=String.format(RedisKey.DAY_TOTAL_TRAFFIC,accountNo);
+        redisTemplate.opsForValue().set(totalTrafficTimeKey,userTrafficVo.getDayTotalLeftTimes()-1, leftSeconds,TimeUnit.SECONDS);
         return JsonData.buildSuccess();
     }
 

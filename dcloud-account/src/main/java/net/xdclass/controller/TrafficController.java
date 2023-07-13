@@ -14,6 +14,7 @@ import net.xdclass.service.TrafficService;
 import net.xdclass.utils.JsonData;
 import net.xdclass.vo.TrafficVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +25,9 @@ import java.util.Map;
 public class TrafficController {
     @Autowired
     private TrafficService trafficService;
+
+    @Value("${rpc.token}")
+    private String rpcToken;
     /**
      * @description TODO 
      * 分页流量包查询列表，查看可用的;
@@ -60,8 +64,15 @@ public class TrafficController {
      */
     @PostMapping("/reduce")
     public JsonData useTraffic(@RequestBody UseTrafficRequest useTrafficRequest, HttpServletRequest request){
-       JsonData jsonData= trafficService.reduce(useTrafficRequest);
-        return JsonData.buildSuccess(jsonData);
+        //rpc-token远程调用handler名称;
+        String requestToken = request.getHeader("rpc-token");
+        if (rpcToken.equals(requestToken)){
+            JsonData jsonData= trafficService.reduce(useTrafficRequest);
+            return jsonData;
+        }else {
+            return JsonData.buildError("非法访问");
+        }
+
     }
 
 }

@@ -7,13 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONUtil;
 import net.xdclass.compant.ShortLinkComponent;
 import net.xdclass.config.RabbitMQConfig;
-import net.xdclass.controller.request.ShortLinkAddRequest;
-import net.xdclass.controller.request.ShortLinkDelRequest;
-import net.xdclass.controller.request.ShortLinkPageRequest;
-import net.xdclass.controller.request.ShortLinkUpdateRequest;
+import net.xdclass.controller.request.*;
 import net.xdclass.enums.DomainTypeEnum;
 import net.xdclass.enums.EventMessageType;
 import net.xdclass.enums.ShortLinkStateEnum;
+import net.xdclass.feign.TrafficFeignService;
 import net.xdclass.interceptor.LoginInterceptor;
 import net.xdclass.manage.DomainManage;
 import net.xdclass.manage.GroupCodeMappingManager;
@@ -66,6 +64,9 @@ public class ShortLinkServiceImpl implements ShortLinkService {
     private GroupCodeMappingManager groupCodeMappingManager;
     @Autowired
     private RedisTemplate<Object,Object> redisTemplate;
+    @Autowired
+    private TrafficFeignService trafficFeignService;
+
     @Override
     public ShortLinkVo parseLinkCode(String linkCode) {
         ShortLinkDO shortLinkDO = shortLinkManager.findByShortLinkCode(linkCode);
@@ -126,21 +127,25 @@ public class ShortLinkServiceImpl implements ShortLinkService {
                 //c端处理
                 ShortLinkDO shortLinkDOInDB = shortLinkManager.findByShortLinkCode(shortLinkCode);
                 if (shortLinkDOInDB==null) {
-                    ShortLinkDO shortLinkDO = ShortLinkDO.builder()
-                            .accountNo(accountNo)
-                            .code(shortLinkCode)
-                            .title(shortLinkAddRequest.getTitle())
-                            .originalUrl(shortLinkAddRequest.getOriginalUrl())
-                            .domain(domainDO.getValue())
-                            .groupId(linkGroupDO.getId())
-                            .expired(shortLinkAddRequest.getExpired())
-                            .sign(originalUrlDigest)
-                            .state(ShortLinkStateEnum.ACTIVE.name())
-                            .del(0)
-                            .build();
-                    //保存到数据库;
-                    shortLinkManager.addShortLink(shortLinkDO);
-                    return true;
+                   boolean reduceFlag = reduceTraffic(eventMessage,shortLinkCode);
+                   //短链服务扣减库存;(c端扣减流量包)
+                   if (reduceFlag){
+                       ShortLinkDO shortLinkDO = ShortLinkDO.builder()
+                               .accountNo(accountNo)
+                               .code(shortLinkCode)
+                               .title(shortLinkAddRequest.getTitle())
+                               .originalUrl(shortLinkAddRequest.getOriginalUrl())
+                               .domain(domainDO.getValue())
+                               .groupId(linkGroupDO.getId())
+                               .expired(shortLinkAddRequest.getExpired())
+                               .sign(originalUrlDigest)
+                               .state(ShortLinkStateEnum.ACTIVE.name())
+                               .del(0)
+                               .build();
+                       //保存到数据库;
+                       shortLinkManager.addShortLink(shortLinkDO);
+                       return true;
+                   }
                 }else{
                     log.info("c端短链码已重复",eventMessage);
                     duplicateCodeFlag = true;
@@ -186,6 +191,19 @@ public class ShortLinkServiceImpl implements ShortLinkService {
      }
 
         return false;
+
+    }
+//    扣减流量包
+    private boolean reduceTraffic(EventMessage eventMessage, String shortLinkCode) {
+
+        UseTrafficRequest useTrafficRequest = UseTrafficRequest.builder().accountNo(eventMessage.getAccountNo())
+                .bizId(shortLinkCode).build();
+        JsonData jsonData = trafficFeignService.useTraffic(useTrafficRequest);
+        if (jsonData.getCode()!=0){
+            log.info("流量包不足,扣减失败",eventMessage);
+            return false;
+        }
+        return true;
 
     }
 

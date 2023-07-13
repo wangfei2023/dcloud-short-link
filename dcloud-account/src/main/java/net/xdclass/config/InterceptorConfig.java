@@ -17,9 +17,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 //添加拦截的路径
                 .addPathPatterns("/api/account/*/**", "/api/traffic/*/**")
 
-                //排除不拦截
+                //排除不拦截  /api/traffic/*/reduce"用rpc-token 进行验证;
                 .excludePathPatterns(
                         "/api/account/*/register","/api/account/*/upload","/api/account/*/login",
-                        "/api/notify/v1/captcha","/api/notify/*/send_code");
+                        "/api/notify/v1/captcha","/api/notify/*/send_code","/api/traffic/*/reduce");
     }
 }
