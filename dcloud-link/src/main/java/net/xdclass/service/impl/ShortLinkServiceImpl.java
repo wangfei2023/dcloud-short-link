@@ -94,6 +94,9 @@ public class ShortLinkServiceImpl implements ShortLinkService {
         //第一次创建短链从redis查询数据key为null;
         String script = "if redis.call('get',KEYS[1]) then return redis.call('decr',KEYS[1]) else return 0 end";
         Long leftTimes = redisTemplate.execute(new DefaultRedisScript<>(script, Long.class), Arrays.asList(cacheKey), "");
+        if (leftTimes<0){
+            redisTemplate.opsForValue().getAndSet(cacheKey,0);
+        }
         log.info("今日流量包剩余次数:{}", leftTimes);
 
         if (leftTimes >= 0) {//有流量包使用;

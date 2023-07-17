@@ -2,6 +2,7 @@ package net.xdclass.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import net.xdclass.enums.ShortLinkStateEnum;
+import net.xdclass.service.LogService;
 import net.xdclass.service.ShortLinkService;
 import net.xdclass.utils.CommonUtil;
 import net.xdclass.vo.ShortLinkVo;
@@ -28,6 +29,10 @@ import javax.servlet.http.HttpServletResponse;
 public class LinkApiController {
     @Autowired
     private ShortLinkService shortLinkService;
+
+    @Autowired
+    private LogService logService;
+
     /**
      * 解析 301还是302，这边是返回http code是302
      * <p>
@@ -51,20 +56,29 @@ public class LinkApiController {
                         HttpServletRequest request,
                         HttpServletResponse response
     ){
-        //判断短链码是否合规;
-        log.info("前端传入短链码={}",linkCode);
-        if (isLetterDigit(linkCode)){
-            ShortLinkVo shortLinkVo=shortLinkService.parseLinkCode(linkCode);
-            //判断是否过期可用;
-            if (isVisitable(shortLinkVo)) {
-                String originalUrl = CommonUtil.removeUrlPrefix(shortLinkVo.getOriginalUrl());
-                response.setHeader("Location",originalUrl);
-                //302跳转;
-                response.setStatus(HttpStatus.FOUND.value());
+        //获取短链码;
+        try {
+            //判断短链码是否合规;
+            log.info("前端传入短链码={}",linkCode);
+            if (isLetterDigit(linkCode)){
+                ShortLinkVo shortLinkVo=shortLinkService.parseLinkCode(linkCode);
+                if (shortLinkVo!=null){
+                    logService.recodeShortLinkLog(request,linkCode,shortLinkVo.getAccountNo());
+                }
+                //判断是否过期可用;
+                if (isVisitable(shortLinkVo)) {
+                    String originalUrl = CommonUtil.removeUrlPrefix(shortLinkVo.getOriginalUrl());
+                    response.setHeader("Location",originalUrl);
+                    //302跳转;
+                    response.setStatus(HttpStatus.FOUND.value());
 
-            }else{
-                response.setStatus(HttpStatus.NOT_FOUND.value());
+                }else{
+                    response.setStatus(HttpStatus.NOT_FOUND.value());
+                    return;
+                }
             }
+        } catch (Exception e) {
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     /**

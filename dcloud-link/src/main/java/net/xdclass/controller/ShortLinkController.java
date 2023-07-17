@@ -7,13 +7,13 @@ import net.xdclass.controller.request.ShortLinkPageRequest;
 import net.xdclass.controller.request.ShortLinkUpdateRequest;
 import net.xdclass.service.ShortLinkService;
 import net.xdclass.utils.JsonData;
+import net.xdclass.vo.ShortLinkVo;
+import org.bouncycastle.cms.PasswordRecipientId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RestController;
-
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -30,6 +30,10 @@ import java.util.Map;
 public class ShortLinkController {
     @Autowired
     private ShortLinkService shortLinkService;
+
+    @Value("${rpc.token}")
+    private String rpcToken;
+
     @PostMapping("/add")
      public JsonData createShortLink(@RequestBody  ShortLinkAddRequest request){
         JsonData jsonData= shortLinkService.createShortLink(request);
@@ -72,6 +76,24 @@ public class ShortLinkController {
     public JsonData  update (@RequestBody ShortLinkUpdateRequest request){
         JsonData jsonData=shortLinkService.update(request);
         return JsonData.buildSuccess(jsonData);
+    }
+
+    /**
+     * @description TODO
+     * 检查短链是否存在;
+     * @return
+     * @author
+     * @date
+     */
+    @GetMapping( "/check")
+    JsonData check(@RequestParam("shortLinkCode")  String shortLinkCode, HttpServletRequest request){
+        String token = request.getHeader("rpc-token");
+        if (rpcToken.equals(token)){
+            ShortLinkVo shortLinkVo = shortLinkService.parseLinkCode(shortLinkCode);
+           return shortLinkVo==null?JsonData.buildError("短链不存在"):JsonData.buildSuccess();
+        }else {
+           return JsonData.buildError("非法访问");
+        }
     }
 }
 
