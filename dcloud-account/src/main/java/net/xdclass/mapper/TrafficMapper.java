@@ -21,5 +21,6 @@ public interface TrafficMapper extends BaseMapper<TrafficDO> {
 //usedTimes已经用的流量包的次数;
     int releaseUsedTimes(@Param("accountNo") Long accountNo,
                          @Param("trafficId")  Long trafficId,
-                         @Param("useTimes") Integer usedTimes);
+                         @Param("useTimes") Integer usedTimes,
+                         @Param("useDateStr") String useDateStr);
 }

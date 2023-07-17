@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -19,6 +21,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("traffic_task")
+@Builder
 public class TrafficTaskDO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -40,7 +43,7 @@ public class TrafficTaskDO implements Serializable {
     /**
      * 唯一标识
      */
-    private String messageId;
+    private String bizId;
 
     private Date gmtCreate;
 

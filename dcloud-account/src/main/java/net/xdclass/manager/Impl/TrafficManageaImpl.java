@@ -103,8 +103,8 @@ public class TrafficManageaImpl implements TrafficManage {
     * @date  
     */
     @Override
-    public int releaseUsedTimes(Long accountNo, Long trafficId, Integer usedTimes) {
-        return  trafficMapper.releaseUsedTimes( accountNo,  trafficId,  usedTimes);
+    public int releaseUsedTimes(Long accountNo, Long trafficId, Integer usedTimes,String useDateStr) {
+        return  trafficMapper.releaseUsedTimes( accountNo,  trafficId,  usedTimes,useDateStr);
     }
 
     @Override
@@ -116,6 +116,11 @@ public class TrafficManageaImpl implements TrafficManage {
                 .set("day_used", 0)
         );
         return rows;
+    }
+
+    public static void main(String[] args) {
+        String date = TimeUtil.format(new Date(), "yyyy-MM-dd");
+        System.out.println(date);
     }
 }
 

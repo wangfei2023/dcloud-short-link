@@ -57,7 +57,7 @@ public class TrafficTest {
     @Test
     public void testReleaseUsedTimes() {
 
-        int rows = trafficManage.addDayUsedTimes(883671476425719808L, 1678430897485475841L, 1);
+        int rows = trafficManage.releaseUsedTimes(883671476425719808L, 1678430897485475841L, 1,"2023-07-14");
         log.info("打印rows:{}",rows);
     }
 }

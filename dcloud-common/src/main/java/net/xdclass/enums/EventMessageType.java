@@ -112,5 +112,14 @@ public enum EventMessageType {
   * @author
   * @date
   */
- TRAFFIC_FREE_INIT;
+ TRAFFIC_FREE_INIT,
+
+ /**
+  * @description 使用流量包
+  *
+  * @return
+  * @author
+  * @date
+  */
+ TRAFFIC_USED;
 }

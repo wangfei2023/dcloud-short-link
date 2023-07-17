@@ -77,7 +77,7 @@ public interface TrafficManage {
      * @param trafficId
      * @param usedTimes
      */
-    int releaseUsedTimes(Long accountNo, Long trafficId, Integer usedTimes);
+    int releaseUsedTimes(Long accountNo, Long trafficId, Integer usedTimes,String useDateStr);
 
 
     /**
