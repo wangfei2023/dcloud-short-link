@@ -10,15 +10,19 @@ package net.xdclass.dwd;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import net.xdclass.func.VistorMapFunction;
 import net.xdclass.util.DeviceUtil;
 import net.xdclass.util.KafkaUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.flink.util.Collector;
 
 import java.net.MalformedURLException;
@@ -27,18 +31,20 @@ import java.util.TreeMap;
 
 @Slf4j
 public class DwdShortLinkLogApp {
-    //定义TOPIC名称
+    //定义 source TOPIC名称
     public static final String SOURCE_TOPIC="ods_link_visit_topic";
+    //定义 sink TOPIC名称
+    public static final String SINK_TOPIC="ods_link_visit_topic";
     //定义消费者组
     public static final String GROUP_ID="dwd_short_link_group";
     public static void main(String[] args) throws Exception{
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
 
-//        DataStream<String> ds = env.socketTextStream("127.0.0.1", 8888);
+        DataStream<String> ds = env.socketTextStream("127.0.0.1", 8888);
         //监听kafka;
-        FlinkKafkaConsumer<String> kafkaConsumer = KafkaUtil.getKafkaConsumer(SOURCE_TOPIC, GROUP_ID);
-        DataStreamSource<String> ds = env.addSource(kafkaConsumer);
+//        FlinkKafkaConsumer<String> kafkaConsumer = KafkaUtil.getKafkaConsumer(SOURCE_TOPIC, GROUP_ID);
+//        DataStreamSource<String> ds = env.addSource(kafkaConsumer);
         ds.print();
         SingleOutputStreamOperator<JSONObject> jsonDs = ds.flatMap(new FlatMapFunction<String, JSONObject>() {
             @Override
@@ -54,6 +60,20 @@ public class DwdShortLinkLogApp {
 
             }
         });
+        //分组
+        KeyedStream<JSONObject, String> keyedStream = jsonDs.keyBy(new KeySelector<JSONObject, String>() {
+            @Override
+            public String getKey(JSONObject value) throws Exception {
+                return value.getString("udid");
+            }
+        });
+        //识别
+        SingleOutputStreamOperator<String> jsonDSWithVistorState = keyedStream.map(new VistorMapFunction());
+        jsonDSWithVistorState.print("ods新老客户访问");
+        //存储到dwd;(输出到kafka)
+        FlinkKafkaProducer<String> kafkaProducer = KafkaUtil.getKafkaProducer(SINK_TOPIC);
+        jsonDSWithVistorState.addSink(kafkaProducer);
+
         env.execute();
     }
 
