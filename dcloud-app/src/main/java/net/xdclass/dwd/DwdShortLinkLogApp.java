@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import net.xdclass.util.DeviceUtil;
 import net.xdclass.util.KafkaUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -20,6 +21,8 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.util.Collector;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.TreeMap;
 
 @Slf4j
@@ -44,12 +47,38 @@ public class DwdShortLinkLogApp {
                 JSONObject jsonObject = JSONObject.parseObject(value);
                 //生成唯一的id;
                 String udid=getDeviceId(jsonObject);
+                String referer = getReferer(jsonObject);
                 jsonObject.put("udid",udid);
+                jsonObject.put("referer",referer);
                 out.collect(jsonObject);
 
             }
         });
         env.execute();
+    }
+
+    /**
+     * @description TODO
+     * 提取referer
+     * @return
+     * @author
+     * @date
+     */
+    public static String getReferer(JSONObject jsonObject){
+        JSONObject dataJsonObject = jsonObject.getJSONObject("data");
+         if (dataJsonObject.containsKey("referer")){
+             String referer = dataJsonObject.getString("referer");
+             if (StringUtils.isNotBlank(referer)){
+                 try {
+                     URL url = new URL(referer);
+                     return url.getHost();
+                 } catch (MalformedURLException e) {
+                    log.info("referer提取失败：{}",e);
+                 }
+             }
+
+         }
+        return "";
     }
     /**
      * @description TODO
