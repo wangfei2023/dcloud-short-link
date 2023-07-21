@@ -39,7 +39,7 @@ public class VistorMapFunction extends RichMapFunction<JSONObject,String> {
         String beForeDateState = newDayVisitorState.value();
         System.out.println(beForeDateState);
         //获取当前访问的时间戳;
-        Long stamp = value.getLong("ts");
+        Long stamp = value.getLong("timeStamp");
         String currentDateStr = TimeUtil.format(stamp);
         //判断日期是否为空判断新老客户访问;(//TODO:老访客;)
         if (StringUtils.isNotBlank(beForeDateState)){

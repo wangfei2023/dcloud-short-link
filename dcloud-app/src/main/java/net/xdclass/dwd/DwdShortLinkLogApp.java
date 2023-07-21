@@ -31,20 +31,27 @@ import java.util.TreeMap;
 
 @Slf4j
 public class DwdShortLinkLogApp {
-    //定义 source TOPIC名称
+    //定义 source TOPIC名称（在kafka进行创建topic）
     public static final String SOURCE_TOPIC="ods_link_visit_topic";
-    //定义 sink TOPIC名称
-    public static final String SINK_TOPIC="ods_link_visit_topic";
-    //定义消费者组
-    public static final String GROUP_ID="dwd_short_link_group";
+
+
+    /**
+     * 定义消费者组
+     */
+    public static final String GROUP_ID = "dwm_unique_visitor_group";
+
+    /**
+     * 定义输出
+     */
+    public static final String SINK_TOPIC = "dwm_unique_visitor_topic";
     public static void main(String[] args) throws Exception{
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
 
-        DataStream<String> ds = env.socketTextStream("127.0.0.1", 8888);
+//        DataStream<String> ds = env.socketTextStream("127.0.0.1", 8888);
         //监听kafka;
-//        FlinkKafkaConsumer<String> kafkaConsumer = KafkaUtil.getKafkaConsumer(SOURCE_TOPIC, GROUP_ID);
-//        DataStreamSource<String> ds = env.addSource(kafkaConsumer);
+        FlinkKafkaConsumer<String> kafkaConsumer = KafkaUtil.getKafkaConsumer(SOURCE_TOPIC, GROUP_ID);
+        DataStreamSource<String> ds = env.addSource(kafkaConsumer);
         ds.print();
         SingleOutputStreamOperator<JSONObject> jsonDs = ds.flatMap(new FlatMapFunction<String, JSONObject>() {
             @Override

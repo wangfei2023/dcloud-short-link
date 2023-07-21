@@ -79,7 +79,32 @@ public class ShortLinkWideDO {
      */
     private String udid;
 
-    private  String ip;
+    //----------------地理地址位置;-----------------------
+
+    /**
+     * 国家
+     */
+    private String country;
+
+    /**
+     * 省份
+     */
+    private String province;
+
+    /**
+     * 城市
+     */
+    private String city;
+
+    /**
+     * 运营商
+     */
+    private String isp;
+
+    /**
+     * 访问ip
+     */
+    private String ip;
 }
 
 
