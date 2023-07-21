@@ -5,6 +5,8 @@ import net.xdclass.controller.request.ShortLinkAddRequest;
 import net.xdclass.controller.request.ShortLinkDelRequest;
 import net.xdclass.controller.request.ShortLinkPageRequest;
 import net.xdclass.controller.request.ShortLinkUpdateRequest;
+import net.xdclass.model.ShortLinkDO;
+import net.xdclass.service.PdfCustomService;
 import net.xdclass.service.ShortLinkService;
 import net.xdclass.utils.JsonData;
 import net.xdclass.vo.ShortLinkVo;
@@ -14,6 +16,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
@@ -31,6 +36,8 @@ public class ShortLinkController {
     @Autowired
     private ShortLinkService shortLinkService;
 
+    @Autowired
+    private PdfCustomService pdfCustomService;
     @Value("${rpc.token}")
     private String rpcToken;
 
@@ -95,5 +102,22 @@ public class ShortLinkController {
            return JsonData.buildError("非法访问");
         }
     }
-}
+    
+    /**
+     * @description TODO 
+     * 短链生成pdf       
+     * @return
+     * @author 
+     * @date  
+     */
+        @PostMapping("/admissioncard")
+        public void generatorAdmissionCard(@RequestBody ShortLinkDO shortLinkDO, HttpServletResponse response) {
+            try {
+                pdfCustomService.generatorShortLinkDO(shortLinkDO, response);
+            } catch (UnsupportedEncodingException | FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 

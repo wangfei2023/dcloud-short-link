@@ -98,6 +98,9 @@ public class ShortLinkDO implements Serializable {
      * 链接产品层级：FIRST 免费青铜、SECOND黄金、THIRD钻石
      */
     private String linkType;
-
+    /**
+     * 图片的地址
+     */
+    private String url;
 
 }
