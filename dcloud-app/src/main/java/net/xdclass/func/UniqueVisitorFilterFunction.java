@@ -23,41 +23,53 @@ import java.util.Date;
 @Slf4j
 //RichFilterFunction存储初始化;
 public class UniqueVisitorFilterFunction extends RichFilterFunction<JSONObject> {
-    private ValueState<String> lastVisitDateState=null;
+    private ValueState<String> lastVisitDateState = null;
+
+
     @Override
     public void open(Configuration parameters) throws Exception {
-        //初始状态;
-        ValueStateDescriptor<String> lastVisitDateStateDes = new ValueStateDescriptor<>("visitDateState", String.class);
-        //统计uv;
+
+        ValueStateDescriptor<String> visitDateStateDes = new ValueStateDescriptor<>("visitDateState", String.class);
+
+        //统计UV
         StateTtlConfig stateTtlConfig = StateTtlConfig.newBuilder(Time.days(1)).build();
-        lastVisitDateStateDes.enableTimeToLive(stateTtlConfig);
-        //存储访问状态;
-        this.lastVisitDateState = getRuntimeContext().getState(lastVisitDateStateDes);
-    }
-    @Override
-    public boolean filter(JSONObject jsonObj) throws Exception {
-        //获取当前访问时间;
-        Long visitTime = jsonObj.getLong("visitTime");
-        String udid = jsonObj.getString("udid");
-        //当前访问时间;
-        String currentVisitDate = TimeUtil.format(visitTime);
-        //获取上次的状态访问时间
-        String lastVisitDate = lastVisitDateState.value();
-        if (StringUtils.isNotBlank(lastVisitDate)&&currentVisitDate.equalsIgnoreCase(lastVisitDate)){
-           log.info(udid+"已经在"+currentVisitDate+"访问过");
-           return false;
-        }else{
-            log.info(udid+"在"+currentVisitDate+"初次访问");
-            lastVisitDateState.update(currentVisitDate);
-            return true;
-        }
-    }
+        //StateTtlConfig stateTtlConfig = StateTtlConfig.newBuilder(Time.seconds(15)).build();
 
+        visitDateStateDes.enableTimeToLive(stateTtlConfig);
 
+        this.lastVisitDateState = getRuntimeContext().getState(visitDateStateDes);
+
+    }
 
     @Override
     public void close() throws Exception {
         super.close();
+    }
+
+    @Override
+    public boolean filter(JSONObject jsonObj) throws Exception {
+
+
+        //获取当前访问时间
+        Long visitTime = jsonObj.getLong("visitTime");
+        String udid = jsonObj.getString("udid");
+
+        //当前访问时间
+        String currentVisitDate = TimeUtil.format(visitTime);
+
+        //获取上次的状态访问时间
+        String lastVisitDate = lastVisitDateState.value();
+
+        ////用当前页面的访问时间和状态时间进行对比
+        if(StringUtils.isNotBlank(lastVisitDate) && currentVisitDate.equalsIgnoreCase(lastVisitDate)){
+            System.out.println(udid+" 已经在 "+currentVisitDate+"时间访问过");
+            return false;
+        }else {
+            System.out.println(udid+" 在 "+currentVisitDate+"时间初次访问");
+            lastVisitDateState.update(currentVisitDate);
+            return true;
+        }
+
     }
 }
 

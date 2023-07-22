@@ -1,11 +1,3 @@
-/**
- * @project dcloud-short-link
- * @description
- * @author Administrator
- * @date 2023/7/20 0020 16:43:59
- * @version 1.0
- */
-
 package net.xdclass.func;
 
 import com.alibaba.fastjson.JSON;
@@ -15,9 +7,20 @@ import net.xdclass.model.ShortLinkWideDO;
 import net.xdclass.util.DeviceUtil;
 import org.apache.flink.api.common.functions.MapFunction;
 
+/**
+ *
+ *
+ * @Description
+ * @Author
+ * @Remark
+ * @Version
+ **/
+
 public class DeviceMapFunction implements MapFunction<String, ShortLinkWideDO> {
+
     @Override
     public ShortLinkWideDO map(String value) throws Exception {
+
         //还原json
         JSONObject jsonObject = JSON.parseObject(value);
 
@@ -25,10 +28,13 @@ public class DeviceMapFunction implements MapFunction<String, ShortLinkWideDO> {
 
         DeviceInfoDO deviceInfoDO = DeviceUtil.getDeviceInfo(userAgent);
 
+        String udid = jsonObject.getString("udid");
+        deviceInfoDO.setUdid(udid);
+
         //配置短链基本信息宽表
         ShortLinkWideDO shortLinkWideDO = ShortLinkWideDO.builder()
                 //短链访问基本信息
-                .visitTime(jsonObject.getLong("timeStamp"))
+                .visitTime(jsonObject.getLong("ts"))
                 .accountNo(jsonObject.getJSONObject("data").getLong("accountNo"))
                 .code(jsonObject.getString("bizId"))
                 .referer(jsonObject.getString("referer"))
@@ -44,8 +50,7 @@ public class DeviceMapFunction implements MapFunction<String, ShortLinkWideDO> {
                 .udid(deviceInfoDO.getUdid())
 
                 .build();
+
         return shortLinkWideDO;
     }
 }
-
-

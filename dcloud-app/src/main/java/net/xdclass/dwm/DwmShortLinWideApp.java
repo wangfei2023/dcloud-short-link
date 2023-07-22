@@ -137,11 +137,11 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 小滴课堂,愿景：让技术不再难学
+ *
  *
  * @Description
- * @Author 二当家小D
- * @Remark 有问题直接联系我，源码-笔记-技术交流群
+ * @Author
+ * @Remark
  * @Version 1.0
  **/
 
@@ -170,12 +170,12 @@ public class DwmShortLinWideApp {
 
         env.setParallelism(1);
 
-       DataStream<String> ds =  env.socketTextStream("127.0.0.1",8888);
+   //    DataStream<String> ds =  env.socketTextStream("127.0.0.1",8888);
 
         // 1、获取流
-//        FlinkKafkaConsumer<String> kafkaConsumer = KafkaUtil.getKafkaConsumer(SOURCE_TOPIC, GROUP_ID);
-//
-//        DataStreamSource<String> ds = env.addSource(kafkaConsumer);
+        FlinkKafkaConsumer<String> kafkaConsumer = KafkaUtil.getKafkaConsumer(SOURCE_TOPIC, GROUP_ID);
+
+        DataStreamSource<String> ds = env.addSource(kafkaConsumer);
 //
         ds.print();
         //2、格式装换，补齐设备信息
@@ -185,10 +185,9 @@ public class DwmShortLinWideApp {
 
 
         //3、补齐地理位置信息
-        SingleOutputStreamOperator<String> shortLinkWideDS  = deviceWideDS.map(new LocationMapFunction());
+      SingleOutputStreamOperator<String> shortLinkWideDS  = deviceWideDS.map(new LocationMapFunction());
 
-
-     //  SingleOutputStreamOperator<String> shortLinkWideDS = AsyncDataStream.unorderedWait(deviceWideDS, new AsyncLocationRequestFunction(), 1000, TimeUnit.MILLISECONDS, 200);
+      //  SingleOutputStreamOperator<String> shortLinkWideDS = AsyncDataStream.unorderedWait(deviceWideDS, new AsyncLocationRequestFunction(), 1000, TimeUnit.MILLISECONDS, 200);
 
         shortLinkWideDS.print("地理位置信息宽表补齐");
 
