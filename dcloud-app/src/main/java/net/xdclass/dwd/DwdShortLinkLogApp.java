@@ -15,6 +15,8 @@ import net.xdclass.util.DeviceUtil;
 import net.xdclass.util.KafkaUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.restartstrategy.RestartStrategies;
+import org.apache.flink.api.common.time.Time;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -28,6 +30,7 @@ import org.apache.flink.util.Collector;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class DwdShortLinkLogApp {
@@ -46,12 +49,19 @@ public class DwdShortLinkLogApp {
     public static final String SINK_TOPIC = "dwm_unique_visitor_topic";
     public static void main(String[] args) throws Exception{
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(1);
+//
+        env.setRestartStrategy(RestartStrategies.failureRateRestart(
+                3, // 一个时间段内的最大失败次数
+                Time.of(5, TimeUnit.MINUTES), // 衡量失败次数的是时间段
+                Time.of(10, TimeUnit.SECONDS) // 间隔
+        ));
 
-//        DataStream<String> ds = env.socketTextStream("127.0.0.1", 8888);
+      env.setParallelism(1);
+
+        DataStream<String> ds = env.socketTextStream("127.0.0.1", 8888);
         //监听kafka;
-        FlinkKafkaConsumer<String> kafkaConsumer = KafkaUtil.getKafkaConsumer(SOURCE_TOPIC, GROUP_ID);
-        DataStreamSource<String> ds = env.addSource(kafkaConsumer);
+//        FlinkKafkaConsumer<String> kafkaConsumer = KafkaUtil.getKafkaConsumer(SOURCE_TOPIC, GROUP_ID);
+//        DataStreamSource<String> ds = env.addSource(kafkaConsumer);
         ds.print();
         SingleOutputStreamOperator<JSONObject> jsonDs = ds.flatMap(new FlatMapFunction<String, JSONObject>() {
             @Override
