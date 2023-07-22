@@ -1,11 +1,3 @@
-/**
- * @project dcloud-short-link
- * @description 自定义函数
- * @author Administrator
- * @date 2023/7/20 0020 16:27:48
- * @version 1.0
- */
-
 package net.xdclass.func;
 
 import com.alibaba.fastjson.JSON;
@@ -16,6 +8,7 @@ import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.configuration.Configuration;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -28,22 +21,32 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
+
+/**
+ * 小滴课堂,愿景：让技术不再难学
+ *
+ * @Description
+ * @Author 二当家小D
+ * @Remark 有问题直接联系我，源码-笔记-技术交流群
+ * @Version 1.0
+ **/
+
 @Slf4j
 public class LocationMapFunction extends RichMapFunction<ShortLinkWideDO,String> {
+
+    private static final String IP_PARSE_URL = "https://restapi.amap.com/v3/ip?ip=%s&output=json&key=4f6e1b4212a5fdec6198720f261892bd";
+
     private CloseableHttpClient httpClient;
 
-    /**
-     * ip位置解析
-     */
-    private static final String IP_PARSE_URL = "https://restapi.amap.com/v3/ip?ip=%s&output=json&key=a71504beedbd521e136ac5b9cb6e76c9";
+
     @Override
     public void open(Configuration parameters) throws Exception {
-        httpClient = createCustomHttpClient();
+        this.httpClient = createHttpClient();
     }
 
     @Override
     public void close() throws Exception {
-        if (httpClient != null) {
+        if(httpClient != null){
             httpClient.close();
         }
     }
@@ -52,39 +55,38 @@ public class LocationMapFunction extends RichMapFunction<ShortLinkWideDO,String>
     public String map(ShortLinkWideDO value) throws Exception {
 
         String ip = value.getIp();
-        String url = String.format(IP_PARSE_URL, ip);
+
+        String url = String.format(IP_PARSE_URL,ip);
 
         HttpGet httpGet = new HttpGet(url);
-        //同步线程操作;
-        try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+
+        try(CloseableHttpResponse response = httpClient.execute(httpGet)){
 
             int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode == HttpStatus.SC_OK) {
+            if(statusCode == HttpStatus.SC_OK){
                 HttpEntity entity = response.getEntity();
                 String result = EntityUtils.toString(entity, "UTF-8");
                 JSONObject locationObj = JSON.parseObject(result);
 
-                log.info(result);
                 String province = locationObj.getString("province");
                 String city = locationObj.getString("city");
                 value.setProvince(province);
                 value.setCity(city);
-                return JSON.toJSONString(value);
             }
-        } catch (Exception e) {
-            log.error("ip 解析错误,value={},msg={}", value, e.getMessage());
+
+        }catch (Exception e){
+
+            log.error("ip解析错误,value={},msg={}",value,e.getMessage());
         }
 
         return JSON.toJSONString(value);
     }
 
 
-    /**
-     * 自定义连接
-     *
-     * @return
-     */
-    public CloseableHttpClient createCustomHttpClient() {
+
+
+
+    private CloseableHttpClient createHttpClient(){
 
 
         Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
@@ -95,11 +97,11 @@ public class LocationMapFunction extends RichMapFunction<ShortLinkWideDO,String>
         PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(registry);
 
 
+
         //MaxPerRoute是对maxtotal的细分，每个主机的并发最大是300，route是指域名
         connectionManager.setDefaultMaxPerRoute(300);
         //设置连接池最大是500个连接
         connectionManager.setMaxTotal(500);
-
         /**
          * 只请求 xdclass.net,最大并发300
          *
@@ -122,12 +124,16 @@ public class LocationMapFunction extends RichMapFunction<ShortLinkWideDO,String>
                 .setConnectionRequestTimeout(1000)
                 .build();
 
+
         CloseableHttpClient closeableHttpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig)
                 .setConnectionManager(connectionManager)
                 .build();
 
         return closeableHttpClient;
     }
+
+
+
+
+
 }
-
-
