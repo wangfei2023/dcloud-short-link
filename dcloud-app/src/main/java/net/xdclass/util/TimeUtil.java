@@ -86,7 +86,16 @@ public class TimeUtil {
         return Date.from(localDateTime.atZone(DEFAULT_ZONE_ID).toInstant());
 
     }
-
+    /**
+     * timestamp 转 字符串，指定日期格式
+     *
+     * @param time
+     * @return
+     */
+    public static String formatWithTime(long timestamp) {
+        String timeStr = DEFAULT_DATE_TIME_FORMATTER.format(new Date(timestamp).toInstant().atZone(DEFAULT_ZONE_ID));
+        return timeStr;
+    }
 
 }
 
