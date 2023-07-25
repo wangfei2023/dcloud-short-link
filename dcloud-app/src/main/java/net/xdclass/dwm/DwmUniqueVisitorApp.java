@@ -53,7 +53,7 @@ public class DwmUniqueVisitorApp {
         FlinkKafkaConsumer<String> kafkaConsumer = KafkaUtil.getKafkaConsumer(SOURCE_TOPIC,GROUP_ID);
 
         DataStreamSource<String> ds = env.addSource(kafkaConsumer);
-
+        ds.print();
 
         //2、数据转换
         SingleOutputStreamOperator<JSONObject> jsonDS = ds.map(jsonStr -> JSON.parseObject(jsonStr));

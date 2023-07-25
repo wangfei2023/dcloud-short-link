@@ -99,7 +99,7 @@ public class VistorMapFunction extends RichMapFunction<JSONObject,String> {
         String beforeDateState = newDayVisitorState.value();
 
         //获取当前访问时间戳
-        Long ts = value.getLong("ts");
+        Long ts = value.getLong("timeStamp");
 
         String currentDateStr = TimeUtil.format(ts);
 

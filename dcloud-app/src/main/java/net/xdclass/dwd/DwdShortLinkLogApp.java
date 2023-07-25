@@ -56,11 +56,11 @@ public class DwdShortLinkLogApp {
 
         env.setParallelism(1);
 
-        DataStream<String> ds =  env.socketTextStream("127.0.0.1",8888);
+    //   DataStream<String> ds =  env.socketTextStream("127.0.0.1",8888);
 //
-//        FlinkKafkaConsumer<String> kafkaConsumer = KafkaUtil.getKafkaConsumer(SOURCE_TOPIC, GROUP_ID);
-//
-//        DataStreamSource<String> ds = env.addSource(kafkaConsumer);
+        FlinkKafkaConsumer<String> kafkaConsumer = KafkaUtil.getKafkaConsumer(SOURCE_TOPIC, GROUP_ID);
+
+        DataStreamSource<String> ds = env.addSource(kafkaConsumer);
 
         ds.print();
 

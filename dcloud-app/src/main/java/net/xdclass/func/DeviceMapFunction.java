@@ -34,7 +34,7 @@ public class DeviceMapFunction implements MapFunction<String, ShortLinkWideDO> {
         //配置短链基本信息宽表
         ShortLinkWideDO shortLinkWideDO = ShortLinkWideDO.builder()
                 //短链访问基本信息
-                .visitTime(jsonObject.getLong("ts"))
+                .visitTime(jsonObject.getLong("timeStamp"))
                 .accountNo(jsonObject.getJSONObject("data").getLong("accountNo"))
                 .code(jsonObject.getString("bizId"))
                 .referer(jsonObject.getString("referer"))

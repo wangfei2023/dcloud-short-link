@@ -39,6 +39,25 @@ public class AsyncLocationRequestFunction   extends RichAsyncFunction<ShortLinkW
     //请求高德地图地址;
     private static final String IP_PARSE_URL = "https://restapi.amap.com/v3/ip?ip=113.68.152.139&output=json&key=620177a3c852534c4d5f582eb1c53699";
     private CloseableHttpAsyncClient httpAsyncClient;
+
+    @Override
+    public void timeout(ShortLinkWideDO input, ResultFuture<String> resultFuture) throws Exception {
+        resultFuture.complete(Collections.singleton(null));
+    }
+
+
+
+    @Override
+    public void open(Configuration parameters) throws Exception {
+        httpAsyncClient=this.createAsyncHttpClient();
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (httpAsyncClient!=null){
+            createAsyncHttpClient().close();
+        }
+    }
     @Override
     public void asyncInvoke(ShortLinkWideDO shortLinkWideDO, ResultFuture<String> resultFuture) throws Exception {
 
@@ -69,16 +88,17 @@ public class AsyncLocationRequestFunction   extends RichAsyncFunction<ShortLinkW
                                     JSONObject locationObj = JSON.parseObject(result);
                                     String city = locationObj.getString("city");
                                     String province = locationObj.getString("province");
-
                                     shortLinkWideDO.setProvince(province);
                                     shortLinkWideDO.setCity(city);
+                                    return shortLinkWideDO;
                                 }
-                                return shortLinkWideDO;
-
                             } catch (Exception e) {
                                 log.error("异步请求异常:{}",shortLinkWideDO);
-                                return null;
+
                             }
+                            shortLinkWideDO.setProvince("_");
+                            shortLinkWideDO.setCity("_");
+                            return shortLinkWideDO;
                         }
                     });
 
@@ -96,18 +116,6 @@ public class AsyncLocationRequestFunction   extends RichAsyncFunction<ShortLinkW
         } catch (Exception e) {
             log.error("ip解析错误,value={},msg={}", shortLinkWideDO, e.getMessage());
             resultFuture.complete(Collections.singleton(null));
-        }
-    }
-
-    @Override
-    public void open(Configuration parameters) throws Exception {
-        httpAsyncClient=this.createAsyncHttpClient();
-    }
-
-    @Override
-    public void close() throws Exception {
-        if (httpAsyncClient!=null){
-            createAsyncHttpClient().close();
         }
     }
  //创建异步客户端;

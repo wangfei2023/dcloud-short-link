@@ -15,6 +15,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import net.xdclass.model.ShortLinkVisitStatsDO;
 import net.xdclass.util.KafkaUtil;
+import net.xdclass.util.MyClickHouseSink;
 import net.xdclass.util.TimeUtil;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -59,15 +60,16 @@ public class DwsShortLinkVisitStatsApp {
 
         env.setParallelism(1);
 
+
         //1、获取多个数据
         FlinkKafkaConsumer<String> shortLinkSource = KafkaUtil.getKafkaConsumer(SHORT_LINK_SOURCE_TOPIC,SHORT_LINK_SOURCE_GROUP);
-        DataStreamSource<String> shortLinkDS = env.addSource(shortLinkSource);
-
+        DataStreamSource<String> ds = env.addSource(shortLinkSource);
+        ds.print();
         FlinkKafkaConsumer<String> uniqueVisitorSource = KafkaUtil.getKafkaConsumer(UNIQUE_VISITOR_SOURCE_TOPIC, UNIQUE_VISITOR_SOURCE_GROUP);
         DataStreamSource<String> uniqueVisitorDS = env.addSource(uniqueVisitorSource);
 
         //2、结构转换 uniqueVisitorDS、shortLinkDS
-        SingleOutputStreamOperator<ShortLinkVisitStatsDO> shortLinkMapDS = shortLinkDS.map(new MapFunction<String, ShortLinkVisitStatsDO>() {
+        SingleOutputStreamOperator<ShortLinkVisitStatsDO> shortLinkMapDS = ds.map(new MapFunction<String, ShortLinkVisitStatsDO>() {
             @Override
             public ShortLinkVisitStatsDO map(String value) throws Exception {
 
@@ -151,7 +153,8 @@ public class DwsShortLinkVisitStatsApp {
         reduceDS.print(">>>>>>");
 
         //8、输出Clickhouse
-
+        String sql="insert into visit_stats values(?,?,?,? ,?,?,?,? ,?,?,?,? ,?,?,?)";
+         reduceDS.addSink(MyClickHouseSink.getJdbcSink(sql));
         env.execute();
 
     }
@@ -182,7 +185,7 @@ public class DwsShortLinkVisitStatsApp {
                 .os(jsonObj.getString("os"))
                 .osVersion(jsonObj.getString("osVersion"))
                 .deviceType(jsonObj.getString("deviceType"))
-
+                 .deviceManufacturer(jsonObj.getString("deviceManufacturer"))
                 .build();
 
         return visitStatsDO;
