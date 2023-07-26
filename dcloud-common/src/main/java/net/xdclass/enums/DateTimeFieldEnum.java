@@ -9,7 +9,7 @@
 package net.xdclass.enums;
 
 public enum  DateTimeFieldEnum {
-    MINUNTE,
+    MINUTE,
     HOUR,
     DAY,
     WEEK;

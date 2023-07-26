@@ -59,4 +59,18 @@
  where   account_no=#{accountNo} and code=#{code} and toYYYYMMDD(start_time) BETWEEN #{startTime} and #{endTime} group by date_time_str ORDER BY date_time_str desc
 </select>
 
+    <!-- 一天内的访问曲线图,小时 -->
+    <select id="queryVisitTrendWithHour" resultMap="BaseResultMap">
+        select toHour(start_time) date_time_str,sum(if(is_new='1', visit_stats.uv,0)) new_uv_count, sum(visit_stats.uv) uv_count, sum(pv) pv_count, count( DISTINCT ip) ip_count from visit_stats
+ where  account_no=#{accountNo} and code=#{code} and toYYYYMMDD(start_time)=#{startTime} group by date_time_str ORDER BY date_time_str desc
+    </select>
+
+    <!-- 小时内的访问曲线图,每分钟，如果要每5分钟，则把 toMinute 改为 toStartOfFiveMinute -->
+    <select id="queryVisitTrendWithMinute" resultMap="BaseResultMap">
+        select toMinute(start_time) date_time_str,sum(if(is_new='1', visit_stats.uv,0)) new_uv_count,
+ sum(visit_stats.uv) uv_count, sum(pv) pv_count, count( DISTINCT ip) ip_count from visit_stats
+ where   account_no=#{accountNo} and code=#{code} and toYYYYMMDDhhmmss(start_time) BETWEEN #{startTime} and #{endTime}
+ group by date_time_str ORDER BY date_time_str desc
+    </select>
+
 </mapper>

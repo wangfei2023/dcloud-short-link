@@ -81,9 +81,9 @@ public class VisitStatsServiceImpl implements VisitStatsService {
         if (DateTimeFieldEnum.DAY.name().equalsIgnoreCase(type)){
          list =  visitStatsMapper.queryVisitTrendWithMultiDay(code,type,startTime,endTime,accountNo);
         }else if(DateTimeFieldEnum.HOUR.name().equalsIgnoreCase(type)){
-
-        }else if (DateTimeFieldEnum.MINUNTE.name().equalsIgnoreCase(type)){
-
+         list= visitStatsMapper.queryVisitTrendWithHour(code,type,startTime,accountNo);
+        }else if (DateTimeFieldEnum.MINUTE.name().equalsIgnoreCase(type)){
+         list= visitStatsMapper.queryVisitTrendWithMinute(code,type,startTime,endTime,accountNo);
         }
         List<ShortLinkVisitStatsVo> visitStatsVos = list.stream().map(obj -> beanProcess(obj)).collect(Collectors.toList());
         return visitStatsVos;
