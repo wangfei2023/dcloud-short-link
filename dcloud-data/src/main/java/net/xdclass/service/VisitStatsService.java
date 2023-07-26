@@ -1,8 +1,7 @@
 package net.xdclass.service;
 
-import net.xdclass.controller.request.RegionQueryRequest;
-import net.xdclass.controller.request.VisitRecordPageRequest;
-import net.xdclass.controller.request.VisitTrendQueryRequest;
+import net.xdclass.controller.request.*;
+import net.xdclass.model.ShortLinkVisitStatsDO;
 import net.xdclass.vo.ShortLinkVisitStatsVo;
 
 import java.util.List;
@@ -21,4 +20,8 @@ public interface VisitStatsService {
     List<ShortLinkVisitStatsVo> queryRegionWithDay(RegionQueryRequest request);
 
     List<ShortLinkVisitStatsVo> queryVisitTrend(VisitTrendQueryRequest request);
+
+    List<ShortLinkVisitStatsVo> queryFrequentSource(FrequentSourceRequest request);
+
+    Map<String,List<ShortLinkVisitStatsVo>>  queryDeviceInfo(QueryDeviceRequest request);
 }

@@ -38,4 +38,9 @@ public interface VisitStatsMapper extends BaseMapper<ShortLinkVisitStatsDO> {
  * @date  
  */
     List<ShortLinkVisitStatsDO> queryVisitTrendWithHour(@Param("code") String code,@Param("type") String type, @Param("startTime") String startTime, @Param("accountNo") Long accountNo);
+
+    List<ShortLinkVisitStatsDO> queryFrequentSource(@Param("code") String code,@Param("accountNo") Long accountNo,@Param("size") int size,@Param("startTime") String startTime,@Param("endTime") String endTime);
+
+    List<ShortLinkVisitStatsDO> queryDeviceInfo(@Param("code") String code,@Param("accountNo") Long accountNo,@Param("startTime") String startTime,@Param("endTime") String endTime,@Param("field") String field);
+//    code,accountNo,startTime,endTime,os
 }

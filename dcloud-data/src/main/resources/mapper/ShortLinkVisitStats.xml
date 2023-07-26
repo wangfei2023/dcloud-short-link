@@ -73,4 +73,29 @@
  group by date_time_str ORDER BY date_time_str desc
     </select>
 
+    <!--高频referer查询 访问来源-->
+    <select id="queryFrequentSource" resultMap="BaseResultMap">
+select referer,sum(pv) pv_count from visit_stats where  account_no=#{accountNo} and code=#{code} and toYYYYMMDD(start_time) BETWEEN #{startTime} and #{endTime}
+group by referer  order by pv_count desc limit #{size}
+    </select>
+
+    <!--查询设备信息分布情况-->
+    <select id="queryDeviceInfo" resultMap="BaseResultMap">
+
+        <if test=" field=='os'">
+            select os,sum(pv) pv_count from visit_stats where account_no=#{accountNo} and code=#{code} and toYYYYMMDD(start_time) BETWEEN #{startTime} and #{endTime}
+            group by os order by pv_count
+        </if>
+
+        <if test=" field=='browser_name'">
+            select browser_name,sum(pv) pv_count from visit_stats where account_no=#{accountNo} and code=#{code} and toYYYYMMDD(start_time) BETWEEN #{startTime} and #{endTime}
+            group by browser_name order by pv_count
+        </if>
+
+        <if test=" field=='device_type'">
+            select device_type,sum(pv) pv_count from visit_stats where account_no=#{accountNo} and code=#{code} and toYYYYMMDD(start_time) BETWEEN #{startTime} and #{endTime}
+            group by device_type order by pv_count
+        </if>
+
+    </select>
 </mapper>

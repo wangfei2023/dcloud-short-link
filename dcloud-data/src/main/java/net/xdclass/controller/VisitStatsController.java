@@ -8,10 +8,9 @@
 
 package net.xdclass.controller;
 
-import net.xdclass.controller.request.RegionQueryRequest;
-import net.xdclass.controller.request.VisitRecordPageRequest;
-import net.xdclass.controller.request.VisitTrendQueryRequest;
+import net.xdclass.controller.request.*;
 import net.xdclass.enums.BizCodeEnum;
+import net.xdclass.model.ShortLinkVisitStatsDO;
 import net.xdclass.service.VisitStatsService;
 import net.xdclass.utils.JsonData;
 import net.xdclass.vo.ShortLinkVisitStatsVo;
@@ -62,6 +61,33 @@ public class VisitStatsController {
     @RequestMapping("trend")
     public JsonData queryVisitTrend(@RequestBody VisitTrendQueryRequest request ){
         List<ShortLinkVisitStatsVo>list = visitStatsService.queryVisitTrend(request);
+        return JsonData.buildSuccess(list);
+    }
+    
+    /**
+     * @description TODO
+     * 高频referer统计;       
+     * @return 
+     * @author 
+     * @date  
+     */
+    @RequestMapping("queryFrequent_source")
+    public JsonData queryFrequentSource (@RequestBody FrequentSourceRequest request){
+        List<ShortLinkVisitStatsVo> list = visitStatsService.queryFrequentSource(request);
+        return JsonData.buildSuccess(list);
+    }
+
+
+    /**
+     * @description TODO
+     * 查询设备访问分布情况
+     * @return
+     * @author
+     * @date
+     */
+    @RequestMapping("device_info")
+    public JsonData queryDeviceInfo (@RequestBody QueryDeviceRequest request){
+        Map<String,List<ShortLinkVisitStatsVo>> list = visitStatsService.queryDeviceInfo (request);
         return JsonData.buildSuccess(list);
     }
 }

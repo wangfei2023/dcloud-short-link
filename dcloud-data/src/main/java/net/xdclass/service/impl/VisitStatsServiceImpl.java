@@ -8,10 +8,9 @@
 
 package net.xdclass.service.impl;
 
-import net.xdclass.controller.request.RegionQueryRequest;
-import net.xdclass.controller.request.VisitRecordPageRequest;
-import net.xdclass.controller.request.VisitTrendQueryRequest;
+import net.xdclass.controller.request.*;
 import net.xdclass.enums.DateTimeFieldEnum;
+import net.xdclass.enums.QueryDeviceEnum;
 import net.xdclass.interceptor.LoginInterceptor;
 import net.xdclass.mapper.VisitStatsMapper;
 import net.xdclass.model.ShortLinkVisitStatsDO;
@@ -87,6 +86,40 @@ public class VisitStatsServiceImpl implements VisitStatsService {
         }
         List<ShortLinkVisitStatsVo> visitStatsVos = list.stream().map(obj -> beanProcess(obj)).collect(Collectors.toList());
         return visitStatsVos;
+    }
+
+    @Override
+    public List<ShortLinkVisitStatsVo> queryFrequentSource( FrequentSourceRequest request) {
+        Long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        String startTime = request.getStartTime();
+        String endTime = request.getEndTime();
+        List<ShortLinkVisitStatsDO> list = visitStatsMapper.queryFrequentSource(request.getCode(), accountNo, 10,startTime,endTime);
+
+        List<ShortLinkVisitStatsVo> visitStatsVOS = list.stream().map(obj -> beanProcess(obj)).collect(Collectors.toList());
+
+        return visitStatsVOS;
+    }
+
+    @Override
+    public Map<String,List<ShortLinkVisitStatsVo>> queryDeviceInfo(QueryDeviceRequest request) {
+        Long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        String startTime = request.getStartTime();
+        String code = request.getCode();
+        String endTime = request.getEndTime();
+        String browser = QueryDeviceEnum.BROWSER.name().toLowerCase();
+        String os = QueryDeviceEnum.OS.name().toLowerCase();
+        String device = QueryDeviceEnum.DEVICE.name().toLowerCase();
+        List<ShortLinkVisitStatsDO> osList = visitStatsMapper.queryDeviceInfo(code,accountNo,startTime,endTime,os);
+        List<ShortLinkVisitStatsDO> browserList = visitStatsMapper.queryDeviceInfo(code,accountNo,startTime,endTime,browser);
+        List<ShortLinkVisitStatsDO> deviceList = visitStatsMapper.queryDeviceInfo(code,accountNo,startTime,endTime,device);
+        List<ShortLinkVisitStatsVo> osVisitStatsVos = osList.stream().map(obj -> beanProcess(obj)).collect(Collectors.toList());
+        List<ShortLinkVisitStatsVo> browserVisitStatsVos = browserList.stream().map(obj -> beanProcess(obj)).collect(Collectors.toList());
+        List<ShortLinkVisitStatsVo> deviceVisitStatsVos = deviceList.stream().map(obj -> beanProcess(obj)).collect(Collectors.toList());
+        HashMap<String, List<ShortLinkVisitStatsVo>> hashMap = new HashMap<>();
+        hashMap.put("osVisitStatsVos",osVisitStatsVos);
+        hashMap.put("browserVisitStatsVos",browserVisitStatsVos);
+        hashMap.put("deviceVisitStatsVos",deviceVisitStatsVos);
+        return hashMap;
     }
 
     public ShortLinkVisitStatsVo beanProcess(ShortLinkVisitStatsDO shortLinkVisitStatsDO ){
