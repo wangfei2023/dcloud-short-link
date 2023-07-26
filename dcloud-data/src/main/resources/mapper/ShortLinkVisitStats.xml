@@ -28,8 +28,35 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-       code,referer,is_new,account_no,province,city,ip,browser_name,os,device_type,start_time,start
+       code,referer,is_new,account_no,province,city,ip,browser_name,os,device_type,start_time
     </sql>
 
+    <select id="countTotal" resultType="java.lang.Integer">
+        select count(1) from visit_stats  where  account_no=#{accountNo} and code=#{code} limit 1000
+    </select>
+
+
+    <!--分页查找-->
+    <select id="pageVisitRecord" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from visit_stats where account_no=#{accountNo} and code=#{code}
+        order by ts desc limit #{from},#{size}
+    </select>
+
+    <!--时间范围内地区访问分布-城市级别，天级别-->
+    <select id="queryRegionVisitStatsWithDay" resultMap="BaseResultMap">
+        select province,city,sum(pv) pv_count,sum(uv) uv_count,count( DISTINCT ip) ip_count  from visit_stats
+        where  account_no=#{accountNo} and code=#{code} and toYYYYMMDD(start_time) BETWEEN #{startTime} and #{endTime}
+        group by province,city order by pv_count desc
+    </select>
+
+
+    <!-- 多天内的访问曲线图,天基本 -->
+    <select id="queryVisitTrendWithMultiDay" resultMap="BaseResultMap">
+        select toYYYYMMDD(start_time) date_time_str,sum(if(is_new='1', visit_stats.uv,0)) new_uv_count,
+ sum(visit_stats.uv) uv_count, sum(pv) pv_count, count( DISTINCT ip) ip_count from visit_stats
+ where   account_no=#{accountNo} and code=#{code} and toYYYYMMDD(start_time) BETWEEN #{startTime} and #{endTime} group by date_time_str ORDER BY date_time_str desc
+</select>
 
 </mapper>

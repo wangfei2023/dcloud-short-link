@@ -100,7 +100,18 @@ public enum BizCodeEnum {
     /**
      * rabbitmq消费异常
      */
-    MQ_CONSUME_EXCEPTION(900101,"mq消费异常");
+    MQ_CONSUME_EXCEPTION(900101,"mq消费异常"),
+
+    /**
+     * 查询数据条数超过限制;
+     */
+    DATA_OUT_OF_SIZE(400001,"查询条数超过限制"),
+
+
+    /**
+     * 查询日期超过最大的限度;
+     */
+    DATA_OUT_OF_LIMIT_DATE(400002,"查询日期超过最大的限度");
     @Getter
     private String message;
     @Getter

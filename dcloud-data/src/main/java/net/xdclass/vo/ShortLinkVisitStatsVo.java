@@ -6,7 +6,7 @@
  * @version 1.0
  */
 
-package net.xdclass.model;
+package net.xdclass.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ShortLinkVisitStatsDO {
+public class ShortLinkVisitStatsVo {
     /**
      * 窗口开始时间  Clickhouse里面会用到
      */
@@ -125,6 +125,7 @@ public class ShortLinkVisitStatsDO {
     private Long pvCount=0L;
 
     private Long newUVCount=0L;
+
 
     /**
      * 时间的字符串映射，天、小时

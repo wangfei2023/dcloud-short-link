@@ -36,7 +36,7 @@ public class DeviceMapFunction implements MapFunction<String, ShortLinkWideDO> {
                 //短链访问基本信息
                 .visitTime(jsonObject.getLong("timeStamp"))
                 .accountNo(jsonObject.getJSONObject("data").getLong("accountNo"))
-                .code(jsonObject.getString("bizId"))
+                .code(jsonObject.getString("bizid"))
                 .referer(jsonObject.getString("referer"))
                 .isNew(jsonObject.getInteger("is_new"))
                 .ip(jsonObject.getString("ip"))
@@ -48,6 +48,7 @@ public class DeviceMapFunction implements MapFunction<String, ShortLinkWideDO> {
                 .deviceType(deviceInfoDO.getDeviceType())
                 .deviceManufacturer(deviceInfoDO.getDeviceManufacturer())
                 .udid(deviceInfoDO.getUdid())
+
 
                 .build();
 
